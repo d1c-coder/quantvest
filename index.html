@@ -1572,25 +1572,24 @@ function checkPwStrength(pw) {
         <span class="nav-brand">QuantVest</span>
       </div>
       <h2 class="auth-title">Create Account</h2>
-      <p class="auth-sub">Join 2.4 million investors worldwide</p>
       
       <form id="signupForm" onsubmit="submitSignup(event)" novalidate>
         <div class="form-group">
-          <label class="form-label" for="su-name">Full Name</label>
-          <input class="form-input" id="su-name" type="text" placeholder="John Doe" oninput="clearFieldErr('su-name-err')"/>
+          <label class="form-label">Full Name</label>
+          <input class="form-input" id="su-name" type="text" placeholder="John Doe" />
           <div class="error-msg" id="su-name-err" style="color: #EF4444; font-size: 0.8rem;"></div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="su-email">Email Address</label>
-          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" oninput="clearFieldErr('su-email-err')"/>
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" />
           <div class="error-msg" id="su-email-err" style="color: #EF4444; font-size: 0.8rem;"></div>
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="su-pw">Password</label>
+          <label class="form-label">Password</label>
           <div class="pw-wrap" style="position: relative;">
-            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value); clearFieldErr('su-pw-err')" style="padding-right:44px; width: 100%;"/>
+            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value)" style="padding-right:44px; width: 100%;"/>
             <button type="button" class="pw-toggle" onclick="togglePw('su-pw',this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">👁</button>
           </div>
           <div class="pw-strength" style="height: 4px; background: rgba(255,255,255,0.1); margin-top: 8px; border-radius: 2px;">
@@ -1616,67 +1615,54 @@ function checkPwStrength(pw) {
 async function submitSignup(event) {
   event.preventDefault();
   
-  // 1. Get elements safely
-  const nameInput = document.getElementById('su-name');
-  const emailInput = document.getElementById('su-email');
-  const pwInput = document.getElementById('su-pw');
-  const termsInput = document.getElementById('su-terms');
-  const signupBtn = document.getElementById('signupBtn');
+  // 1. Grab elements
+  const elName = document.getElementById('su-name');
+  const elEmail = document.getElementById('su-email');
+  const elPw = document.getElementById('su-pw');
+  const elTerms = document.getElementById('su-terms');
+  const btn = document.getElementById('signupBtn');
 
-  // 2. CRITICAL CHECK: This stops the "Uncaught TypeError"
-  if (!nameInput || !emailInput || !pwInput || !termsInput) {
-    console.error("Signup Error: One or more HTML elements (su-name, su-email, su-pw, or su-terms) were not found.");
-    alert("System Error: Form components missing. Please refresh.");
+  // 2. SAFETY CHECK: If any of these are null, the script will stop and tell you which one.
+  if (!elName || !elEmail || !elPw || !elTerms) {
+    console.error("Missing elements:", { elName, elEmail, elPw, elTerms });
+    alert("System Error: Form inputs not found. Check your HTML IDs.");
     return;
   }
 
-  // 3. Clear previous errors safely
-  const errFields = ['su-name-err', 'su-email-err', 'su-pw-err', 'su-terms-err'];
-  errFields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerText = "";
-  });
-
-  // 4. Validation
-  if (!termsInput.checked) {
-    const termsErr = document.getElementById('su-terms-err');
-    if (termsErr) termsErr.innerText = "Please accept the terms to continue.";
+  // 3. Simple Validation
+  if (!elTerms.checked) {
+    document.getElementById('su-terms-err').innerText = "Please accept the terms.";
     return;
   }
 
-  signupBtn.innerText = "Processing...";
-  signupBtn.disabled = true;
+  btn.innerText = "Processing...";
+  btn.disabled = true;
 
   try {
-    // 5. Supabase Signup Call
+    // 4. Supabase Auth Signup
     const { data, error } = await _supabase.auth.signUp({
-      email: emailInput.value,
-      password: pwInput.value,
-      options: {
-        data: {
-          full_name: nameInput.value,
-        }
-      }
+      email: elEmail.value,
+      password: elPw.value,
+      options: { data: { full_name: elName.value } }
     });
 
     if (error) throw error;
 
+    // 5. Update Profile (Row created by SQL Trigger)
     if (data.user) {
-      // 6. Update the profiles table
       await _supabase
         .from('profiles')
-        .update({ full_name: nameInput.value })
+        .update({ full_name: elName.value })
         .eq('id', data.user.id);
       
-      // Redirect to dashboard
+      // Redirect to User Dashboard
       window.location.href = 'user-dashboard.html';
     }
 
   } catch (err) {
-    const emailErr = document.getElementById('su-email-err');
-    if (emailErr) emailErr.innerText = err.message;
-    signupBtn.innerText = "Create Account →";
-    signupBtn.disabled = false;
+    document.getElementById('su-email-err').innerText = err.message;
+    btn.innerText = "Create Account →";
+    btn.disabled = false;
   }
 }
 </script>
