@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QuantVest — Investor Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --bg: #020510; --card: #080f26; --blue: #2563EB; --cyan: #06B6D4; --white: #F0F4FF; --muted: #8094C0; }
+        body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; margin: 0; display: flex; }
+        .sidebar { width: 250px; background: #060c1e; height: 100vh; padding: 30px; border-right: 1px solid rgba(255,255,255,0.05); }
+        .main { flex: 1; padding: 40px; overflow-y: auto; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        .card { background: var(--card); padding: 25px; border-radius: 16px; border: 1px solid rgba(96,165,250,0.1); }
+        .val { font-size: 28px; font-weight: bold; font-family: 'Syne'; margin-top: 10px; }
+        .kyc-box { background: rgba(37, 99, 235, 0.05); border: 1px dashed var(--blue); padding: 30px; border-radius: 16px; text-align: center; }
+        button { background: var(--blue); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        input[type="text"] { width: 100%; padding: 12px; background: #020510; border: 1px solid var(--muted); border-radius: 8px; color: white; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2 style="font-family:Syne; color:var(--cyan)">QuantVest</h2>
+        <p style="color:var(--muted)">Investor Account</p>
+    </div>
+    <div class="main">
+        <h1 style="font-family:Syne">Portfolio Overview</h1>
+        <div class="stats-grid">
+            <div class="card"><div>Balance</div><div id="balance" class="val">$0.00</div></div>
+            <div class="card"><div>Invested</div><div id="investment" class="val">$0.00</div></div>
+            <div class="card"><div>AI Earnings</div><div id="aiEarnings" class="val" style="color:var(--cyan)">$0.00</div></div>
+            <div class="card"><div>Net Profit</div><div id="profit" class="val" style="color:#22C55E">$0.00</div></div>
+        </div>
+
+        <div class="kyc-box" id="kycSection">
+            <h3 style="font-family:Syne">KYC Verification</h3>
+            <p id="kycStatusText" style="color:var(--muted)">Submit your identity details to enable full account features.</p>
+            <div id="kycForm">
+                <input type="text" id="docUrl" placeholder="Link to ID Document (URL)">
+                <button onclick="submitKYC()">Submit for Review</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabase = supabase.createClient('YOUR_URL', 'YOUR_KEY');
+
+        async function init() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if(!user) return;
+
+            // Load Wallet
+            const { data: wallet } = await supabase.from('wallets').select('*').eq('user_id', user.id).single();
+            if(wallet) {
+                document.getElementById('balance').innerText = `$${wallet.balance}`;
+                document.getElementById('investment').innerText = `$${wallet.current_investment}`;
+                document.getElementById('aiEarnings').innerText = `$${wallet.ai_earnings}`;
+                document.getElementById('profit').innerText = `$${wallet.total_profit}`;
+            }
+
+            // Load KYC Status
+            const { data: profile } = await supabase.from('profiles').select('kyc_status').eq('id', user.id).single();
+            if(profile.kyc_status !== 'pending' || profile.kyc_document_url) {
+                document.getElementById('kycForm').style.display = 'none';
+                document.getElementById('kycStatusText').innerText = `Status: ${profile.kyc_status.toUpperCase()}`;
+            }
+        }
+
+        async function submitKYC() {
+            const { data: { user } } = await supabase.auth.getUser();
+            const url = document.getElementById('docUrl').value;
+            await supabase.from('profiles').update({ kyc_document_url: url }).eq('id', user.id);
+            alert("Documents submitted!");
+            location.reload();
+        }
+        init();
+    </script>
+</body>
+</html>
