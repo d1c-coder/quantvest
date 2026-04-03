@@ -1502,6 +1502,7 @@ footer{
 </script>
 <!-- ==================== SIGNUP PAGE ==================== -->
 <div class="page" id="page-signup">
+<div class="page" id="page-signup">
   <div class="auth-wrap">
     <div class="auth-card">
       <div class="auth-logo">
@@ -1510,82 +1511,106 @@ footer{
       </div>
       <h2 class="auth-title">Create Account</h2>
       <p class="auth-sub">Join 2.4 million investors worldwide — it's free</p>
+      
       <form id="signupForm" onsubmit="submitSignup(event)" novalidate>
         <div class="form-group">
           <label class="form-label" for="su-name">Full Name</label>
-          <input class="form-input" id="su-name" type="text" placeholder="John Doe" autocomplete="name" oninput="clearFieldErr('su-name-err')"/>
+          <input class="form-input" id="su-name" type="text" placeholder="John Doe" />
           <div class="error-msg" id="su-name-err" style="color: #EF4444; font-size: 0.8rem;"></div>
         </div>
+
         <div class="form-group">
           <label class="form-label" for="su-email">Email Address</label>
-          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" autocomplete="email" oninput="clearFieldErr('su-email-err')"/>
+          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" />
           <div class="error-msg" id="su-email-err" style="color: #EF4444; font-size: 0.8rem;"></div>
         </div>
+
         <div class="form-group">
           <label class="form-label" for="su-pw">Password</label>
           <div class="pw-wrap" style="position: relative;">
-            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value);clearFieldErr('su-pw-err')" autocomplete="new-password" style="padding-right:44px; width:100%"/>
+            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value)" style="padding-right:44px; width:100%"/>
             <button type="button" class="pw-toggle" onclick="togglePw('su-pw',this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">👁</button>
           </div>
           <div class="pw-strength" style="height: 4px; background: rgba(255,255,255,0.1); margin-top: 8px; border-radius: 2px;">
             <div id="pwBar" style="height: 100%; width: 0%; transition: 0.3s; border-radius: 2px;"></div>
           </div>
-          <div id="pwLabel" style="font-size: 0.7rem; margin-top: 4px; color: var(--muted);"></div>
+          <div id="pwLabel" style="font-size: 0.7rem; margin-top: 4px; color: #8094C0;"></div>
           <div class="error-msg" id="su-pw-err" style="color: #EF4444; font-size: 0.8rem;"></div>
         </div>
-        <div class="checkbox-row">
+
+        <div class="checkbox-row" style="display:flex; gap:10px; align-items:center; margin-top:15px;">
           <input type="checkbox" id="su-terms"/>
-          <label for="su-terms">I agree to the Terms and Privacy Policy</label>
+          <label for="su-terms" style="font-size: 0.85rem;">I agree to the Terms and Privacy Policy</label>
         </div>
         <div class="error-msg" id="su-terms-err" style="color: #EF4444; font-size: 0.8rem;"></div>
+
         <button type="submit" id="signupBtn" class="btn-primary auth-btn" style="width: 100%; margin-top: 15px;">Create Account →</button>
       </form>
-      <div class="auth-link">Already have an account? <a onclick="navigate('login')">Log In</a></div>
+      <div class="auth-link" style="text-align:center; margin-top:20px;">Already have an account? <a onclick="navigate('login')" style="cursor:pointer; color:#2563EB;">Log In</a></div>
     </div>
   </div>
 </div>
-
 <script>
   async function submitSignup(event) {
     event.preventDefault();
     
-    const name = document.getElementById('su-name').value;
-    const email = document.getElementById('su-email').value;
-    const password = document.getElementById('su-pw').value;
-    const terms = document.getElementById('su-terms').checked;
+    // 1. Safely grab elements
+    const elName = document.getElementById('su-name');
+    const elEmail = document.getElementById('su-email');
+    const elPw = document.getElementById('su-pw');
+    const elTerms = document.getElementById('su-terms');
     const signupBtn = document.getElementById('signupBtn');
 
-    if(!terms) { document.getElementById('su-terms-err').innerText = "Please accept the terms"; return; }
+    // 2. SAFETY CHECK: If any element is missing in HTML, stop here and log it
+    if (!elName || !elEmail || !elPw || !elTerms) {
+        console.error("One or more signup fields are missing in the HTML!");
+        return;
+    }
+
+    // 3. Clear previous errors
+    document.getElementById('su-name-err').innerText = "";
+    document.getElementById('su-email-err').innerText = "";
+    document.getElementById('su-pw-err').innerText = "";
+    document.getElementById('su-terms-err').innerText = "";
+
+    // 4. Validation
+    if (!elTerms.checked) { 
+        document.getElementById('su-terms-err').innerText = "Please accept the terms"; 
+        return; 
+    }
 
     signupBtn.innerText = "Creating Account...";
     signupBtn.disabled = true;
 
     try {
-      // 1. Sign up user
-      const { data, error } = await _supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: { data: { full_name: name } }
-      });
+        // 5. Supabase Signup
+        const { data, error } = await _supabase.auth.signUp({
+            email: elEmail.value,
+            password: elPw.value,
+            options: { data: { full_name: elName.value } }
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // 2. Update Profile Name (The SQL trigger creates the row, we add the name)
-      await _supabase.from('profiles').update({ full_name: name }).eq('id', data.user.id);
-
-      // 3. Since Email Confirmation is OFF, they are logged in. Redirect to Dashboard.
-      window.location.href = 'user-dashboard.html';
+        // 6. Update Profile
+        if (data.user) {
+            await _supabase.from('profiles').update({ full_name: elName.value }).eq('id', data.user.id);
+            // Since Email Confirmation is OFF in your dashboard, they are logged in.
+            window.location.href = 'user-dashboard.html';
+        }
 
     } catch (err) {
-      document.getElementById('su-email-err').innerText = err.message;
-      signupBtn.innerText = "Create Account →";
-      signupBtn.disabled = false;
+        document.getElementById('su-email-err').innerText = err.message;
+        signupBtn.innerText = "Create Account →";
+        signupBtn.disabled = false;
     }
-  }
+}
 
-  function checkPwStrength(pw) {
+// Keep the UI helpers
+function checkPwStrength(pw) {
     const bar = document.getElementById('pwBar');
     const label = document.getElementById('pwLabel');
+    if(!bar || !label) return;
     let s = 0;
     if (pw.length >= 8) s += 25;
     if (/[A-Z]/.test(pw)) s += 25;
@@ -1594,7 +1619,7 @@ footer{
     bar.style.width = s + "%";
     bar.style.background = s < 50 ? "#EF4444" : s < 75 ? "#F59E0B" : "#22C55E";
     label.innerText = s < 50 ? "Weak" : s < 75 ? "Fair" : "Strong";
-  }
+}
 </script>
 
 <!-- ==================== FORGOT PASSWORD PAGE ==================== -->
