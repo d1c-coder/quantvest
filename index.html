@@ -593,17 +593,10 @@ h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
 .auth-sub{text-align:center;color:var(--muted);font-size:0.9rem;margin-bottom:2rem;}
 .auth-btn{width:100%;padding:14px;font-size:1rem;border-radius:10px;}
 .auth-link{text-align:center;margin-top:1.2rem;font-size:0.88rem;color:var(--muted);}
-.auth-link a{color:var(--blue-bright);text-decoration:none;font-weight:500;}
+.auth-link a{color:var(--blue-bright);text-decoration:none;font-weight:500;cursor:pointer;}
 .auth-link a:hover{text-decoration:underline;}
 .auth-divider{display:flex;align-items:center;gap:12px;margin:1.5rem 0;color:var(--muted);font-size:0.82rem;}
 .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.social-btn{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
-  background:rgba(255,255,255,0.04);border:1px solid var(--border);
-  border-radius:10px;padding:12px;cursor:pointer;font-size:0.88rem;
-  font-family:'DM Sans',sans-serif;color:var(--white);transition:all 0.2s;
-}
-.social-btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-bright);}
 .pw-wrap{position:relative;}
 .pw-toggle{
   position:absolute;right:12px;top:50%;transform:translateY(-50%);
@@ -909,7 +902,7 @@ footer{
   <!-- TICKER -->
   <div class="ticker-wrap">
     <div class="ticker-track">
-      <div class="ticker-track-inner" id="tickerInner"><!-- JS --></div>
+      <div class="ticker-track-inner" id="tickerInner"></div>
     </div>
   </div>
 
@@ -923,7 +916,7 @@ footer{
       <button class="btn-ghost" onclick="navigate('markets')" style="display:flex;align-items:center;gap:6px;">View All Markets →</button>
     </div>
     <p class="section-sub">Real-time prices via CoinGecko API. Auto-refreshes every 30 seconds.</p>
-    <div class="grid-3" id="cryptoGrid"><!-- JS --></div>
+    <div class="grid-3" id="cryptoGrid"></div>
   </div>
 
   <!-- STOCKS -->
@@ -979,9 +972,7 @@ footer{
   <div class="section" style="padding-top:2rem;">
     <div style="background:linear-gradient(135deg,rgba(37,99,235,0.2),rgba(6,182,212,0.1));
       border:1px solid var(--border-bright);border-radius:24px;padding:4rem 3rem;text-align:center;">
-      <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;margin-bottom:1rem;">
-        Ready to Start Investing?
-      </h2>
+      <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;margin-bottom:1rem;">Ready to Start Investing?</h2>
       <p style="color:var(--muted);margin-bottom:2rem;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.7;">
         Join 2.4 million investors who trust QuantVest with their financial future. Get started in minutes.
       </p>
@@ -1028,7 +1019,7 @@ footer{
               <th>7d Chart</th>
             </tr>
           </thead>
-          <tbody id="marketsBody"><!-- JS --></tbody>
+          <tbody id="marketsBody"></tbody>
         </table>
       </div>
     </div>
@@ -1068,24 +1059,9 @@ footer{
       <div class="section-tag">Leadership</div>
       <h2 class="section-title" style="margin-bottom:2rem;">Meet the Team</h2>
       <div class="grid-3">
-        <div class="team-card">
-          <div class="team-avatar">AK</div>
-          <div class="team-name">Alex Kwan</div>
-          <div class="team-role">Chief Executive Officer</div>
-          <div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div>
-        </div>
-        <div class="team-card">
-          <div class="team-avatar">PR</div>
-          <div class="team-name">Priya Reddy</div>
-          <div class="team-role">Chief Technology Officer</div>
-          <div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div>
-        </div>
-        <div class="team-card">
-          <div class="team-avatar">ML</div>
-          <div class="team-name">Marcus Lee</div>
-          <div class="team-role">Head of Product</div>
-          <div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div>
-        </div>
+        <div class="team-card"><div class="team-avatar">AK</div><div class="team-name">Alex Kwan</div><div class="team-role">Chief Executive Officer</div><div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div></div>
+        <div class="team-card"><div class="team-avatar">PR</div><div class="team-name">Priya Reddy</div><div class="team-role">Chief Technology Officer</div><div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div></div>
+        <div class="team-card"><div class="team-avatar">ML</div><div class="team-name">Marcus Lee</div><div class="team-role">Head of Product</div><div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div></div>
       </div>
     </div>
 
@@ -1206,7 +1182,6 @@ footer{
       ⚠️ <strong>Risk Disclaimer:</strong> Returns are projections only. Investing involves risk. Past performance does not guarantee future results.
     </p>
 
-    <!-- COMPARE TABLE -->
     <div style="max-width:900px;margin:4rem auto 0;">
       <h2 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:2rem;font-size:1.6rem;">Full Feature Comparison</h2>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
@@ -1220,42 +1195,12 @@ footer{
             </tr>
           </thead>
           <tbody>
-            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
-              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Portfolio Limit</td>
-              <td style="text-align:center;padding:14px;">$5,000</td>
-              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);">$50,000</td>
-              <td style="text-align:center;padding:14px;">Unlimited</td>
-            </tr>
-            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
-              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Return Target (Monthly)</td>
-              <td style="text-align:center;padding:14px;">2%</td>
-              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);">4%</td>
-              <td style="text-align:center;padding:14px;">7%</td>
-            </tr>
-            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
-              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Crypto Trading</td>
-              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
-              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td>
-              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
-            </tr>
-            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
-              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Stocks & ETFs</td>
-              <td style="text-align:center;padding:14px;color:var(--loss);">✗</td>
-              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td>
-              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
-            </tr>
-            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
-              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">AI Trade Signals</td>
-              <td style="text-align:center;padding:14px;color:var(--loss);">✗</td>
-              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td>
-              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
-            </tr>
-            <tr>
-              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Personal Advisor</td>
-              <td style="text-align:center;padding:14px;color:var(--loss);">✗</td>
-              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--loss);">✗</td>
-              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
-            </tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);"><td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Portfolio Limit</td><td style="text-align:center;padding:14px;">$5,000</td><td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);">$50,000</td><td style="text-align:center;padding:14px;">Unlimited</td></tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);"><td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Return Target (Monthly)</td><td style="text-align:center;padding:14px;">2%</td><td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);">4%</td><td style="text-align:center;padding:14px;">7%</td></tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);"><td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Crypto Trading</td><td style="text-align:center;padding:14px;color:var(--gain);">✓</td><td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td><td style="text-align:center;padding:14px;color:var(--gain);">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);"><td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Stocks & ETFs</td><td style="text-align:center;padding:14px;color:var(--loss);">✗</td><td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td><td style="text-align:center;padding:14px;color:var(--gain);">✓</td></tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);"><td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">AI Trade Signals</td><td style="text-align:center;padding:14px;color:var(--loss);">✗</td><td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td><td style="text-align:center;padding:14px;color:var(--gain);">✓</td></tr>
+            <tr><td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Personal Advisor</td><td style="text-align:center;padding:14px;color:var(--loss);">✗</td><td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--loss);">✗</td><td style="text-align:center;padding:14px;color:var(--gain);">✓</td></tr>
           </tbody>
         </table>
       </div>
@@ -1269,8 +1214,6 @@ footer{
     <div class="section-tag">Support</div>
     <h1 class="section-title">Frequently Asked Questions</h1>
     <p class="section-sub">Can't find what you're looking for? <a onclick="navigate('support')" style="color:var(--blue-bright);cursor:pointer;">Contact our support team.</a></p>
-
-    <!-- FAQ CATEGORIES -->
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem;">
       <button class="filter-btn active" onclick="filterFAQs('all',this)">All</button>
       <button class="filter-btn" onclick="filterFAQs('account',this)">Account</button>
@@ -1278,7 +1221,6 @@ footer{
       <button class="filter-btn" onclick="filterFAQs('trading',this)">Trading</button>
       <button class="filter-btn" onclick="filterFAQs('security',this)">Security</button>
     </div>
-
     <div id="faqList"></div>
   </div>
 </div>
@@ -1325,18 +1267,18 @@ footer{
           <div class="grid-2" style="gap:1rem;">
             <div class="form-group">
               <label class="form-label">Full Name *</label>
-              <input class="form-input" id="sf-name" placeholder="John Doe" type="text" oninput="clearFieldErr('sf-name','sf-name-err')"/>
+              <input class="form-input" id="sf-name" placeholder="John Doe" type="text" oninput="clearErr('sf-name','sf-name-err')"/>
               <div class="error-msg" id="sf-name-err"></div>
             </div>
             <div class="form-group">
               <label class="form-label">Email Address *</label>
-              <input class="form-input" id="sf-email" placeholder="john@email.com" type="email" oninput="clearFieldErr('sf-email','sf-email-err')"/>
+              <input class="form-input" id="sf-email" placeholder="john@email.com" type="email" oninput="clearErr('sf-email','sf-email-err')"/>
               <div class="error-msg" id="sf-email-err"></div>
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">Subject *</label>
-            <select class="form-input" id="sf-subject" onchange="clearFieldErr('sf-subject','sf-subject-err')">
+            <select class="form-input" id="sf-subject" onchange="clearErr('sf-subject','sf-subject-err')">
               <option value="">Select a subject...</option>
               <option>General Inquiry</option><option>Withdrawal Issue</option>
               <option>Deposit Issue</option><option>Account Issue</option>
@@ -1347,7 +1289,7 @@ footer{
           </div>
           <div class="form-group">
             <label class="form-label">Message *</label>
-            <textarea class="form-input form-textarea" id="sf-msg" placeholder="Describe your issue or question in detail..." oninput="clearFieldErr('sf-msg','sf-msg-err')"></textarea>
+            <textarea class="form-input form-textarea" id="sf-msg" placeholder="Describe your issue or question in detail..." oninput="clearErr('sf-msg','sf-msg-err')"></textarea>
             <div class="error-msg" id="sf-msg-err"></div>
           </div>
           <button type="submit" class="btn-primary" style="padding:13px 32px;">Send Message ✈️</button>
@@ -1375,11 +1317,7 @@ footer{
         </div>
         <div class="hours-block">
           <div class="hours-title">🕐 Business Hours</div>
-          <div class="hours-text">
-            Monday–Friday: 8AM–10PM EST<br>
-            Saturday–Sunday: 10AM–6PM EST<br>
-            <span style="color:var(--blue-bright);font-size:0.82rem;">AI Chat available 24/7</span>
-          </div>
+          <div class="hours-text">Monday–Friday: 8AM–10PM EST<br>Saturday–Sunday: 10AM–6PM EST<br><span style="color:var(--blue-bright);font-size:0.82rem;">AI Chat available 24/7</span></div>
         </div>
       </div>
     </div>
@@ -1387,8 +1325,6 @@ footer{
 </div>
 
 <!-- ==================== LOGIN PAGE ==================== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <div class="page" id="page-login">
   <div class="auth-wrap">
     <div class="auth-card">
@@ -1397,172 +1333,32 @@ footer{
         <span class="nav-brand">QuantVest</span>
       </div>
       <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-sub">Sign in to your account to continue</p>
       <form id="loginForm" onsubmit="submitLogin(event)" novalidate>
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input class="form-input" id="l-email" type="email" placeholder="you@example.com" oninput="clearFieldErr('l-email-err')"/>
-          <div class="error-msg" id="l-email-err" style="color:#EF4444; font-size:0.8rem; margin-top:4px;"></div>
+          <input class="form-input" id="l-email" type="email" placeholder="you@example.com" oninput="clearErrById('l-email-err')"/>
+          <div class="error-msg" id="l-email-err"></div>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
-          <div style="position:relative;">
-            <input class="form-input" id="l-pw" type="password" placeholder="••••••••" oninput="clearFieldErr('l-pw-err')" style="padding-right:44px;"/>
-            <button type="button" onclick="togglePw('l-pw',this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted);">👁</button>
+          <div class="pw-wrap">
+            <input class="form-input" id="l-pw" type="password" placeholder="••••••••" oninput="clearErrById('l-pw-err')" style="padding-right:44px;"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('l-pw',this)">👁</button>
           </div>
-          <div class="error-msg" id="l-pw-err" style="color:#EF4444; font-size:0.8rem; margin-top:4px;"></div>
+          <div class="error-msg" id="l-pw-err"></div>
         </div>
-        <button type="submit" id="loginBtn" class="btn-primary auth-btn" style="width:100%; margin-top:10px;">Sign In</button>
+        <div class="remember-row">
+          <label><input type="checkbox" id="l-remember"/> Remember me</label>
+          <a class="forgot-link" onclick="navigate('forgot')">Forgot password?</a>
+        </div>
+        <button type="submit" id="loginBtn" class="btn-primary auth-btn">Sign In</button>
       </form>
       <div class="auth-link">Don't have an account? <a onclick="navigate('signup')">Sign Up Free</a></div>
     </div>
   </div>
 </div>
 
-<div class="page" id="page-signup">
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="auth-logo">
-        <div class="logo-box">📈</div>
-        <span class="nav-brand">QuantVest</span>
-      </div>
-      <h2 class="auth-title">Create Account</h2>
-      <form id="signupForm" onsubmit="submitSignup(event)" novalidate>
-        <div class="form-group">
-          <label class="form-label">Full Name</label>
-          <input class="form-input" id="su-name" type="text" placeholder="John Doe" oninput="clearFieldErr('su-name-err')"/>
-          <div class="error-msg" id="su-name-err" style="color:#EF4444; font-size:0.8rem;"></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" oninput="clearFieldErr('su-email-err')"/>
-          <div class="error-msg" id="su-email-err" style="color:#EF4444; font-size:0.8rem;"></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Password</label>
-          <div style="position:relative;">
-            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value); clearFieldErr('su-pw-err')" style="padding-right:44px;"/>
-            <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted);">👁</button>
-          </div>
-          <div class="pw-strength" style="height:4px; background:rgba(255,255,255,0.1); margin-top:8px; border-radius:2px;">
-            <div id="pwBar" style="height:100%; width:0%; transition:0.3s; border-radius:2px;"></div>
-          </div>
-          <div id="pwLabel" style="font-size:0.7rem; margin-top:4px; color:var(--muted);"></div>
-          <div class="error-msg" id="su-pw-err" style="color:#EF4444; font-size:0.8rem;"></div>
-        </div>
-        <div style="display:flex; gap:8px; align-items:center; margin:15px 0;">
-          <input type="checkbox" id="su-terms"/>
-          <label for="su-terms" style="font-size:0.85rem; color:var(--muted);">I agree to the Terms</label>
-        </div>
-        <div id="su-terms-err" style="color:#EF4444; font-size:0.8rem; margin-bottom:10px;"></div>
-        <button type="submit" id="signupBtn" class="btn-primary auth-btn" style="width:100%;">Create Account →</button>
-      </form>
-      <div class="auth-link">Already have an account? <a onclick="navigate('login')">Log In</a></div>
-    </div>
-  </div>
-</div>
-<script>
- // --- SUPABASE CONFIG ---
-const SUPABASE_URL = 'https://wcajayygjtivdmnogcsj.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_o3lUhxgsVVe2_tD3QgXGsw_LSJskVs7';
-const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// --- SIGNUP LOGIC ---
-async function submitSignup(event) {
-  event.preventDefault();
-  
-  const elName = document.getElementById('su-name');
-  const elEmail = document.getElementById('su-email');
-  const elPw = document.getElementById('su-pw');
-  const elTerms = document.getElementById('su-terms');
-  const btn = document.getElementById('signupBtn');
-
-  // Safety Check
-  if (!elName || !elEmail || !elPw || !elTerms) {
-    console.error("Critical Error: Signup elements not found in HTML.");
-    return;
-  }
-
-  if (!elTerms.checked) {
-    document.getElementById('su-terms-err').innerText = "Please accept the terms";
-    return;
-  }
-
-  btn.innerText = "Creating Account...";
-  btn.disabled = true;
-
-  try {
-    const { data, error } = await _supabase.auth.signUp({
-      email: elEmail.value,
-      password: elPw.value,
-      options: { data: { full_name: elName.value } }
-    });
-
-    if (error) throw error;
-
-    // Save Name to Profile
-    if (data.user) {
-      await _supabase.from('profiles').update({ full_name: elName.value }).eq('id', data.user.id);
-      window.location.href = 'user-dashboard.html';
-    }
-  } catch (err) {
-    document.getElementById('su-email-err').innerText = err.message;
-    btn.innerText = "Create Account →";
-    btn.disabled = false;
-  }
-}
-
-// --- LOGIN LOGIC ---
-async function submitLogin(event) {
-  event.preventDefault();
-  const email = document.getElementById('l-email').value;
-  const password = document.getElementById('l-pw').value;
-  const btn = document.getElementById('loginBtn');
-
-  btn.innerText = "Authenticating...";
-  btn.disabled = true;
-
-  try {
-    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-
-    const { data: profile } = await _supabase.from('profiles').select('role').eq('id', data.user.id).single();
-    window.location.href = (profile?.role === 'admin') ? 'admin-dashboard.html' : 'user-dashboard.html';
-  } catch (err) {
-    document.getElementById('l-pw-err').innerText = err.message;
-    btn.innerText = "Sign In";
-    btn.disabled = false;
-  }
-}
-
-// --- UI HELPERS ---
-function clearFieldErr(id) {
-  const err = document.getElementById(id);
-  if (err) err.innerText = "";
-}
-
-function togglePw(id, btn) {
-  const input = document.getElementById(id);
-  if (input.type === "password") {
-    input.type = "text"; btn.innerText = "🙈";
-  } else {
-    input.type = "password"; btn.innerText = "👁";
-  }
-}
-
-function checkPwStrength(pw) {
-  const bar = document.getElementById('pwBar');
-  const label = document.getElementById('pwLabel');
-  if(!bar) return;
-  let s = 0;
-  if (pw.length >= 8) s += 25;
-  if (/[A-Z]/.test(pw)) s += 25;
-  if (/[0-9]/.test(pw)) s += 25;
-  if (/[^A-Za-z0-9]/.test(pw)) s += 25;
-  bar.style.width = s + "%";
-  bar.style.background = s < 50 ? "#EF4444" : s < 75 ? "#F59E0B" : "#22C55E";
-  label.innerText = s < 50 ? "Weak" : s < 75 ? "Fair" : "Strong";
-}
-</script>
 <!-- ==================== SIGNUP PAGE ==================== -->
 <div class="page" id="page-signup">
   <div class="auth-wrap">
@@ -1572,100 +1368,39 @@ function checkPwStrength(pw) {
         <span class="nav-brand">QuantVest</span>
       </div>
       <h2 class="auth-title">Create Account</h2>
-      
+      <p class="auth-sub">Join 2.4M+ investors worldwide</p>
       <form id="signupForm" onsubmit="submitSignup(event)" novalidate>
         <div class="form-group">
           <label class="form-label">Full Name</label>
-          <input class="form-input" id="su-name" type="text" placeholder="John Doe" />
-          <div class="error-msg" id="su-name-err" style="color: #EF4444; font-size: 0.8rem;"></div>
+          <input class="form-input" id="su-name" type="text" placeholder="John Doe" oninput="clearErrById('su-name-err')"/>
+          <div class="error-msg" id="su-name-err"></div>
         </div>
-
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" />
-          <div class="error-msg" id="su-email-err" style="color: #EF4444; font-size: 0.8rem;"></div>
+          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" oninput="clearErrById('su-email-err')"/>
+          <div class="error-msg" id="su-email-err"></div>
         </div>
-
         <div class="form-group">
           <label class="form-label">Password</label>
-          <div class="pw-wrap" style="position: relative;">
-            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value)" style="padding-right:44px; width: 100%;"/>
-            <button type="button" class="pw-toggle" onclick="togglePw('su-pw',this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">👁</button>
+          <div class="pw-wrap">
+            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value);clearErrById('su-pw-err')" style="padding-right:44px;"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('su-pw',this)">👁</button>
           </div>
-          <div class="pw-strength" style="height: 4px; background: rgba(255,255,255,0.1); margin-top: 8px; border-radius: 2px;">
-            <div id="pwBar" style="height: 100%; width: 0%; transition: 0.3s; border-radius: 2px;"></div>
-          </div>
-          <div id="pwLabel" style="font-size: 0.7rem; margin-top: 4px; color: #8094C0;"></div>
-          <div class="error-msg" id="su-pw-err" style="color: #EF4444; font-size: 0.8rem;"></div>
+          <div class="pw-strength"><div id="pwBar" style="height:100%;width:0%;border-radius:4px;transition:width 0.4s,background 0.4s;"></div></div>
+          <div id="pwLabel" style="font-size:0.75rem;margin-top:4px;"></div>
+          <div class="error-msg" id="su-pw-err"></div>
         </div>
-
-        <div class="checkbox-row" style="display:flex; gap:10px; align-items:center; margin-top:15px;">
+        <div class="checkbox-row">
           <input type="checkbox" id="su-terms"/>
-          <label for="su-terms" style="font-size: 0.85rem;">I agree to the Terms</label>
+          <label for="su-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
         </div>
-        <div class="error-msg" id="su-terms-err" style="color: #EF4444; font-size: 0.8rem;"></div>
-
-        <button type="submit" id="signupBtn" class="btn-primary auth-btn" style="width: 100%; margin-top: 15px;">Create Account →</button>
+        <div class="error-msg" id="su-terms-err"></div>
+        <button type="submit" id="signupBtn" class="btn-primary auth-btn" style="margin-top:1rem;">Create Account →</button>
       </form>
-      <div class="auth-link" style="text-align:center; margin-top:20px;">Already have an account? <a onclick="navigate('login')" style="cursor:pointer; color:#2563EB;">Log In</a></div>
+      <div class="auth-link">Already have an account? <a onclick="navigate('login')">Log In</a></div>
     </div>
   </div>
 </div>
-<script>
-async function submitSignup(event) {
-  event.preventDefault();
-  
-  // 1. Grab elements
-  const elName = document.getElementById('su-name');
-  const elEmail = document.getElementById('su-email');
-  const elPw = document.getElementById('su-pw');
-  const elTerms = document.getElementById('su-terms');
-  const btn = document.getElementById('signupBtn');
-
-  // 2. SAFETY CHECK: If any of these are null, the script will stop and tell you which one.
-  if (!elName || !elEmail || !elPw || !elTerms) {
-    console.error("Missing elements:", { elName, elEmail, elPw, elTerms });
-    alert("System Error: Form inputs not found. Check your HTML IDs.");
-    return;
-  }
-
-  // 3. Simple Validation
-  if (!elTerms.checked) {
-    document.getElementById('su-terms-err').innerText = "Please accept the terms.";
-    return;
-  }
-
-  btn.innerText = "Processing...";
-  btn.disabled = true;
-
-  try {
-    // 4. Supabase Auth Signup
-    const { data, error } = await _supabase.auth.signUp({
-      email: elEmail.value,
-      password: elPw.value,
-      options: { data: { full_name: elName.value } }
-    });
-
-    if (error) throw error;
-
-    // 5. Update Profile (Row created by SQL Trigger)
-    if (data.user) {
-      await _supabase
-        .from('profiles')
-        .update({ full_name: elName.value })
-        .eq('id', data.user.id);
-      
-      // Redirect to User Dashboard
-      window.location.href = 'user-dashboard.html';
-    }
-
-  } catch (err) {
-    document.getElementById('su-email-err').innerText = err.message;
-    btn.innerText = "Create Account →";
-    btn.disabled = false;
-  }
-}
-</script>
 
 <!-- ==================== FORGOT PASSWORD PAGE ==================== -->
 <div class="page" id="page-forgot">
@@ -1683,122 +1418,13 @@ async function submitSignup(event) {
       <form onsubmit="submitForgot(event)" novalidate>
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input class="form-input" id="fp-email" type="email" placeholder="you@example.com" oninput="clearFieldErr('fp-email','fp-email-err')"/>
+          <input class="form-input" id="fp-email" type="email" placeholder="you@example.com" oninput="clearErrById('fp-email-err')"/>
           <div class="error-msg" id="fp-email-err"></div>
         </div>
         <button type="submit" class="btn-primary auth-btn">Send Reset Link</button>
         <div id="fp-success" style="display:none;" class="success-banner">📧 Reset link sent! Check your inbox.</div>
       </form>
       <div class="auth-link" style="margin-top:1.5rem;">Remember your password? <a onclick="navigate('login')">Back to Login</a></div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== DASHBOARD PAGE ==================== -->
-<div class="page" id="page-dashboard">
-  <div class="section" style="padding-top:4rem;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
-      <div>
-        <div style="color:var(--muted);font-size:0.85rem;margin-bottom:4px;">Welcome back 👋</div>
-        <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;">My Portfolio</h1>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button class="btn-ghost" onclick="showToast('info','Coming Soon','Deposit flow coming soon!')">💰 Deposit</button>
-        <button class="btn-primary" onclick="showToast('info','Coming Soon','Withdraw flow coming soon!')">💸 Withdraw</button>
-      </div>
-    </div>
-
-    <div class="dash-grid">
-      <div class="dash-stat">
-        <div class="dash-stat-label">Total Portfolio Value <span style="font-size:1rem;">📈</span></div>
-        <div class="dash-stat-val" style="background:linear-gradient(135deg,#60A5FA,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$24,820</div>
-        <div class="dash-stat-sub" style="color:var(--gain);">▲ +$1,240 this month</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dash-stat-label">Total Returns <span style="font-size:1rem;">💹</span></div>
-        <div class="dash-stat-val" style="color:var(--gain);">+$3,820</div>
-        <div class="dash-stat-sub" style="color:var(--gain);">▲ +18.2% all time</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dash-stat-label">Active Plan <span style="font-size:1rem;">💎</span></div>
-        <div class="dash-stat-val" style="font-size:1.3rem;">Growth</div>
-        <div class="dash-stat-sub" style="color:var(--muted);">Renews in 14 days</div>
-      </div>
-      <div class="dash-stat">
-        <div class="dash-stat-label">Available Cash <span style="font-size:1rem;">💵</span></div>
-        <div class="dash-stat-val">$2,150</div>
-        <div class="dash-stat-sub" style="color:var(--muted);">Ready to invest</div>
-      </div>
-    </div>
-
-    <div class="dash-main">
-      <div class="dash-chart-area">
-        <div class="dash-chart-header">
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;">Portfolio Performance</div>
-            <div style="font-size:0.8rem;color:var(--muted);margin-top:2px;">Last 6 months</div>
-          </div>
-          <div class="dash-chart-tabs">
-            <button class="chart-tab active">1W</button>
-            <button class="chart-tab">1M</button>
-            <button class="chart-tab">6M</button>
-            <button class="chart-tab">1Y</button>
-          </div>
-        </div>
-        <div class="simple-chart" id="dashChart"></div>
-        <div style="display:flex;gap:1.5rem;margin-top:1rem;flex-wrap:wrap;">
-          <div><div style="font-size:0.75rem;color:var(--muted);">Starting Value</div><div style="font-weight:600;font-family:'Syne',sans-serif;">$21,000</div></div>
-          <div><div style="font-size:0.75rem;color:var(--muted);">Current Value</div><div style="font-weight:600;font-family:'Syne',sans-serif;color:var(--gain);">$24,820</div></div>
-          <div><div style="font-size:0.75rem;color:var(--muted);">Total Gain</div><div style="font-weight:600;font-family:'Syne',sans-serif;color:var(--gain);">+$3,820 (+18.2%)</div></div>
-        </div>
-      </div>
-
-      <div class="dash-sidebar">
-        <div class="dash-widget">
-          <div class="dash-widget-title">Quick Actions</div>
-          <div class="dash-actions">
-            <button class="dash-action-btn primary" onclick="showToast('info','Trade','Trading terminal coming soon!')">📊 Trade</button>
-            <button class="dash-action-btn" onclick="showToast('info','Transfer','Transfer feature coming soon!')">↔️ Transfer</button>
-            <button class="dash-action-btn" onclick="showToast('info','Deposit','Deposit flow coming soon!')">💰 Deposit</button>
-            <button class="dash-action-btn" onclick="showToast('info','Withdraw','Withdrawal flow coming soon!')">💸 Withdraw</button>
-          </div>
-        </div>
-
-        <div class="dash-widget">
-          <div class="dash-widget-title">Holdings</div>
-          <div class="portfolio-item">
-            <div class="port-left"><div class="port-icon">₿</div><div><div class="port-name">Bitcoin</div><div class="port-alloc">0.142 BTC · 38%</div></div></div>
-            <div class="port-val"><div class="port-price">$9,578</div><div class="port-chg" style="color:var(--gain);">▲ +4.2%</div></div>
-          </div>
-          <div class="portfolio-item">
-            <div class="port-left"><div class="port-icon">Ξ</div><div><div class="port-name">Ethereum</div><div class="port-alloc">1.82 ETH · 28%</div></div></div>
-            <div class="port-val"><div class="port-price">$6,952</div><div class="port-chg" style="color:var(--loss);">▼ -1.1%</div></div>
-          </div>
-          <div class="portfolio-item">
-            <div class="port-left"><div class="port-icon" style="font-size:0.7rem;font-weight:700;">NVDA</div><div><div class="port-name">NVIDIA</div><div class="port-alloc">8 shares · 22%</div></div></div>
-            <div class="port-val"><div class="port-price">$5,461</div><div class="port-chg" style="color:var(--gain);">▲ +2.3%</div></div>
-          </div>
-          <div class="portfolio-item">
-            <div class="port-left"><div class="port-icon">◎</div><div><div class="port-name">Solana</div><div class="port-alloc">14.8 SOL · 12%</div></div></div>
-            <div class="port-val"><div class="port-price">$2,679</div><div class="port-chg" style="color:var(--gain);">▲ +5.8%</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:1.5rem;">
-      <div class="dash-widget">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-          <div class="dash-widget-title" style="margin-bottom:0;">Recent Transactions</div>
-          <button class="btn-ghost" style="padding:6px 14px;font-size:0.8rem;">View All →</button>
-        </div>
-        <div class="recent-tx">
-          <div class="tx-item"><div class="tx-icon dep">💰</div><div class="tx-body"><div class="tx-name">Deposit</div><div class="tx-date">Apr 2, 2025 · 10:24 AM</div></div><div class="tx-amount"><div class="tx-val" style="color:var(--gain);">+$2,500.00</div><div class="tx-status">Completed</div></div></div>
-          <div class="tx-item"><div class="tx-icon buy">📊</div><div class="tx-body"><div class="tx-name">Bought BTC</div><div class="tx-date">Mar 28, 2025 · 3:15 PM</div></div><div class="tx-amount"><div class="tx-val">-$1,200.00</div><div class="tx-status">Completed</div></div></div>
-          <div class="tx-item"><div class="tx-icon buy">📊</div><div class="tx-body"><div class="tx-name">Bought NVDA</div><div class="tx-date">Mar 22, 2025 · 9:42 AM</div></div><div class="tx-amount"><div class="tx-val">-$875.50</div><div class="tx-status">Completed</div></div></div>
-          <div class="tx-item"><div class="tx-icon wit">💸</div><div class="tx-body"><div class="tx-name">Withdrawal</div><div class="tx-date">Mar 15, 2025 · 11:00 AM</div></div><div class="tx-amount"><div class="tx-val" style="color:var(--loss);">-$500.00</div><div class="tx-status">Completed</div></div></div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -1902,7 +1528,6 @@ async function submitSignup(event) {
       <a onclick="navigate('markets')">Markets</a>
       <a onclick="navigate('plans')">Pricing Plans</a>
       <a onclick="navigate('about')">About Us</a>
-      <a onclick="navigate('dashboard')">Dashboard</a>
     </div>
     <div class="footer-col">
       <h4>Support</h4>
@@ -1929,11 +1554,161 @@ async function submitSignup(event) {
   </div>
 </footer>
 
+<!-- ==================== SUPABASE + ALL SCRIPTS ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ============================================================
+// SUPABASE INIT
+// ============================================================
+const SUPABASE_URL = 'https://wcajayygjtivdmnogcsj.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_o3lUhxgsVVe2_tD3QgXGsw_LSJskVs7';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
+// AUTH — LOGIN
+// ============================================================
+async function submitLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('l-email').value.trim();
+  const password = document.getElementById('l-pw').value;
+  const btn = document.getElementById('loginBtn');
+
+  let valid = true;
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    document.getElementById('l-email-err').textContent = '⚠ Please enter a valid email.';
+    valid = false;
+  }
+  if (!password) {
+    document.getElementById('l-pw-err').textContent = '⚠ Password is required.';
+    valid = false;
+  }
+  if (!valid) return;
+
+  btn.textContent = 'Authenticating...';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+
+    const { data: profile } = await _supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single();
+
+    window.location.href = (profile?.role === 'admin') ? 'admin-dashboard.html' : 'user-dashboard.html';
+  } catch (err) {
+    document.getElementById('l-pw-err').textContent = err.message;
+    btn.textContent = 'Sign In';
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// AUTH — SIGNUP
+// ============================================================
+async function submitSignup(event) {
+  event.preventDefault();
+
+  const name = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const password = document.getElementById('su-pw').value;
+  const terms = document.getElementById('su-terms').checked;
+  const btn = document.getElementById('signupBtn');
+
+  let valid = true;
+  if (!name) { document.getElementById('su-name-err').textContent = '⚠ Full name is required.'; valid = false; }
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { document.getElementById('su-email-err').textContent = '⚠ Valid email required.'; valid = false; }
+  if (password.length < 8) { document.getElementById('su-pw-err').textContent = '⚠ Password must be at least 8 characters.'; valid = false; }
+  if (!terms) { document.getElementById('su-terms-err').textContent = '⚠ You must agree to the Terms.'; valid = false; }
+  if (!valid) return;
+
+  btn.textContent = 'Creating Account...';
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await _supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
+    });
+    if (error) throw error;
+
+    if (data.user) {
+      await _supabase.from('profiles').update({ full_name: name }).eq('id', data.user.id);
+      window.location.href = 'user-dashboard.html';
+    }
+  } catch (err) {
+    document.getElementById('su-email-err').textContent = err.message;
+    btn.textContent = 'Create Account →';
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// AUTH — FORGOT PASSWORD
+// ============================================================
+function submitForgot(e) {
+  e.preventDefault();
+  const email = document.getElementById('fp-email');
+  if (!email.value.trim() || !/\S+@\S+\.\S+/.test(email.value)) {
+    document.getElementById('fp-email-err').textContent = '⚠ Please enter a valid email address.';
+    return;
+  }
+  document.getElementById('fp-success').style.display = 'flex';
+  showToast('success', 'Reset Link Sent', 'Check your inbox for the reset link.');
+  email.value = '';
+}
+
+// ============================================================
+// SHARED FORM HELPERS
+// ============================================================
+function clearErrById(errId) {
+  const el = document.getElementById(errId);
+  if (el) el.textContent = '';
+}
+
+function clearErr(inputId, errId) {
+  const inp = document.getElementById(inputId);
+  if (inp) inp.classList.remove('error');
+  clearErrById(errId);
+}
+
+function markErr(inputId, errId, msg) {
+  const inp = document.getElementById(inputId);
+  if (inp) inp.classList.add('error');
+  const err = document.getElementById(errId);
+  if (err) err.textContent = msg;
+}
+
+function togglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function checkPwStrength(pw) {
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const bar = document.getElementById('pwBar');
+  const lbl = document.getElementById('pwLabel');
+  if (!bar) return;
+  const colors = ['', '#EF4444', '#F59E0B', '#22C55E'];
+  const labels = ['', 'Weak', 'Fair', 'Strong 🔒'];
+  const s = Math.min(score, 3);
+  bar.style.width = (s * 33.3) + '%';
+  bar.style.background = colors[s] || colors[3];
+  if (lbl) { lbl.textContent = labels[s] || ''; lbl.style.color = colors[s] || colors[3]; }
+}
+
 // ============================================================
 // NAVIGATION
 // ============================================================
-const ALL_PAGES = ['home','markets','about','plans','faqs','support','login','signup','forgot','dashboard','404'];
+const ALL_PAGES = ['home','markets','about','plans','faqs','support','login','signup','forgot','404'];
 const NAV_PAGES = ['home','markets','about','plans','faqs','support'];
 let currentPage = 'home';
 
@@ -1949,22 +1724,16 @@ function navigate(page) {
   });
 
   const pg = document.getElementById('page-' + page);
-  if (pg) { pg.classList.add('active'); }
+  if (pg) pg.classList.add('active');
 
   const navEl = document.getElementById('nav-' + page);
   if (navEl) navEl.classList.add('active');
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Show/hide floating elements
   const isHome = page === 'home';
   const af = document.getElementById('activityFloat');
   if (af) af.style.display = isHome ? 'block' : 'none';
-
-  // Dashboard special case - could redirect to login
-  if (page === 'dashboard') {
-    setTimeout(renderDashChart, 100);
-  }
 }
 
 // ============================================================
@@ -2001,7 +1770,7 @@ function showToast(type, title, msg, duration = 4000) {
   const id = 'toast-' + (++toastCount);
   const icons = { success: '✅', error: '❌', info: 'ℹ️', warn: '⚠️' };
   const div = document.createElement('div');
-  div.className = `toast-notif ${type}`;
+  div.className = 'toast-notif ' + type;
   div.id = id;
   div.innerHTML = `
     <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
@@ -2072,16 +1841,13 @@ function randBars(up, count = 7) {
   }).join('');
 }
 
-function renderSkeletonGrid(gridId, count, cols) {
+function renderSkeletonGrid(gridId) {
   const grid = document.getElementById(gridId);
   if (!grid) return;
-  grid.innerHTML = Array(count).fill(0).map(() => `
+  grid.innerHTML = Array(6).fill(0).map(() => `
     <div class="crypto-card">
       <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
-        <div style="flex:1;">
-          <div class="skel-line shimmer" style="width:60%;margin-bottom:6px;"></div>
-          <div class="skel-line shimmer" style="width:35%;height:10px;"></div>
-        </div>
+        <div style="flex:1;"><div class="skel-line shimmer" style="width:60%;margin-bottom:6px;"></div><div class="skel-line shimmer" style="width:35%;height:10px;"></div></div>
         <div class="shimmer" style="width:42px;height:42px;border-radius:50%;"></div>
       </div>
       <div class="skel-line shimmer" style="width:70%;height:22px;margin-bottom:8px;"></div>
@@ -2119,7 +1885,7 @@ function renderCryptoGrid(data) {
 async function fetchCrypto() {
   const grid = document.getElementById('cryptoGrid');
   if (!grid) return;
-  if (Object.keys(cryptoData).length === 0) renderSkeletonGrid('cryptoGrid', 6);
+  if (Object.keys(cryptoData).length === 0) renderSkeletonGrid('cryptoGrid');
   try {
     const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple,dogecoin&vs_currencies=usd&include_24hr_change=true', { signal: AbortSignal.timeout(8000) });
     if (!r.ok) throw new Error();
@@ -2164,7 +1930,6 @@ async function fetchTicker() {
 
   const inner = document.getElementById('tickerInner');
   if (!inner) return;
-  // Duplicate 3 times for seamless looping
   const tripled = [...items, ...items, ...items];
   inner.innerHTML = tripled.map(i => `
     <div class="ticker-item">
@@ -2203,7 +1968,6 @@ function renderStocks() {
 // MARKETS TABLE
 // ============================================================
 const allMarketsData = [
-  // CRYPTO
   { cat:'crypto', rank:1, name:'Bitcoin', sym:'BTC', icon:'₿', price:67450, chg:2.45, mc:'$1.32T', vol:'$28.4B' },
   { cat:'crypto', rank:2, name:'Ethereum', sym:'ETH', icon:'Ξ', price:3820, chg:-1.12, mc:'$459B', vol:'$12.1B' },
   { cat:'crypto', rank:3, name:'Solana', sym:'SOL', icon:'◎', price:182, chg:4.78, mc:'$78B', vol:'$3.2B' },
@@ -2212,18 +1976,15 @@ const allMarketsData = [
   { cat:'crypto', rank:6, name:'Dogecoin', sym:'DOGE', icon:'Ð', price:0.18, chg:3.21, mc:'$26B', vol:'$0.9B' },
   { cat:'crypto', rank:7, name:'Cardano', sym:'ADA', icon:'A', price:0.48, chg:1.10, mc:'$17B', vol:'$0.5B' },
   { cat:'crypto', rank:8, name:'Avalanche', sym:'AVAX', icon:'▲', price:38, chg:-2.33, mc:'$16B', vol:'$0.6B' },
-  // STOCKS
   { cat:'stocks', rank:1, name:'Apple Inc.', sym:'AAPL', icon:'🍎', price:191.45, chg:0.82, mc:'$2.95T', vol:'$52B' },
   { cat:'stocks', rank:2, name:'NVIDIA Corp.', sym:'NVDA', icon:'🖥', price:875.10, chg:2.30, mc:'$2.18T', vol:'$44B' },
   { cat:'stocks', rank:3, name:'Microsoft', sym:'MSFT', icon:'🪟', price:415.25, chg:0.45, mc:'$3.08T', vol:'$21B' },
   { cat:'stocks', rank:4, name:'Amazon', sym:'AMZN', icon:'📦', price:184.60, chg:0.55, mc:'$1.92T', vol:'$32B' },
   { cat:'stocks', rank:5, name:'Tesla Inc.', sym:'TSLA', icon:'⚡', price:248.23, chg:-1.44, mc:'$790B', vol:'$23B' },
   { cat:'stocks', rank:6, name:'Meta Platforms', sym:'META', icon:'👁', price:521.80, chg:1.24, mc:'$1.34T', vol:'$18B' },
-  // ETFs
   { cat:'etf', rank:1, name:'SPDR S&P 500', sym:'SPY', icon:'📊', price:522.40, chg:0.31, mc:'$534B', vol:'$18B' },
   { cat:'etf', rank:2, name:'Invesco QQQ', sym:'QQQ', icon:'📊', price:445.20, chg:0.58, mc:'$238B', vol:'$12B' },
   { cat:'etf', rank:3, name:'iShares MSCI', sym:'EEM', icon:'📊', price:42.10, chg:-0.22, mc:'$22B', vol:'$0.8B' },
-  // FOREX
   { cat:'forex', rank:1, name:'EUR/USD', sym:'EUR/USD', icon:'€', price:1.0854, chg:0.12, mc:'—', vol:'$1.2T' },
   { cat:'forex', rank:2, name:'GBP/USD', sym:'GBP/USD', icon:'£', price:1.2634, chg:-0.08, mc:'—', vol:'$740B' },
   { cat:'forex', rank:3, name:'USD/JPY', sym:'USD/JPY', icon:'¥', price:154.30, chg:0.24, mc:'—', vol:'$980B' },
@@ -2257,7 +2018,6 @@ function renderMarketsTable() {
   const tbody = document.getElementById('marketsBody');
   if (!tbody) return;
 
-  // Update crypto prices from live data
   const liveMap = { BTC: cryptoData.bitcoin, ETH: cryptoData.ethereum, SOL: cryptoData.solana, BNB: cryptoData.binancecoin, XRP: cryptoData.ripple, DOGE: cryptoData.dogecoin };
 
   let filtered = allMarketsData
@@ -2270,7 +2030,8 @@ function renderMarketsTable() {
     .filter(item => marketsFilter === 'all' || item.cat === marketsFilter)
     .filter(item => !marketsSearch || item.name.toLowerCase().includes(marketsSearch) || item.sym.toLowerCase().includes(marketsSearch));
 
-  document.getElementById('marketsCount').textContent = filtered.length;
+  const countEl = document.getElementById('marketsCount');
+  if (countEl) countEl.textContent = filtered.length;
 
   if (filtered.length === 0) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--muted);">No assets found matching "${marketsSearch}"</td></tr>`;
@@ -2283,24 +2044,12 @@ function renderMarketsTable() {
     return `
       <tr>
         <td style="padding-left:20px;color:var(--muted);font-size:0.82rem;">${i + 1}</td>
-        <td>
-          <div class="m-coin-info">
-            <div class="m-coin-icon">${item.icon}</div>
-            <div>
-              <div class="m-coin-name">${item.name}</div>
-              <div class="m-coin-sym">${item.sym}</div>
-            </div>
-          </div>
-        </td>
+        <td><div class="m-coin-info"><div class="m-coin-icon">${item.icon}</div><div><div class="m-coin-name">${item.name}</div><div class="m-coin-sym">${item.sym}</div></div></div></td>
         <td style="font-family:'Syne',sans-serif;font-weight:700;">${priceStr}</td>
-        <td>
-          <span class="m-badge ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(item.chg).toFixed(2)}%</span>
-        </td>
+        <td><span class="m-badge ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(item.chg).toFixed(2)}%</span></td>
         <td style="color:var(--muted);">${item.mc}</td>
         <td style="color:var(--muted);">${item.vol}</td>
-        <td>
-          <div class="m-sparkline">${sparkline(up)}</div>
-        </td>
+        <td><div class="m-sparkline">${sparkline(up)}</div></td>
       </tr>`;
   }).join('');
 }
@@ -2318,14 +2067,12 @@ function getInitials(n) { return n.split(' ').map(p => p[0]).join(''); }
 function showActivity() {
   const af = document.getElementById('activityFloat');
   if (!af || af.style.display === 'none') return;
-
   const candidates = actNames.filter(n => n !== lastActName);
   const name = candidates[Math.floor(Math.random() * candidates.length)];
   lastActName = name;
   const action = actActions[Math.floor(Math.random() * actActions.length)];
   const amount = actAmounts[Math.floor(Math.random() * actAmounts.length)];
   const timeAgo = ['just now', '2m ago', '1m ago'][Math.floor(Math.random() * 3)];
-
   const toast = document.getElementById('activityToast');
   if (!toast) return;
   toast.innerHTML = `
@@ -2337,7 +2084,6 @@ function showActivity() {
         <div class="act-time">${timeAgo}</div>
       </div>
     </div>`;
-
   setTimeout(() => {
     const t = toast.querySelector('.activity-toast');
     if (t) t.classList.add('fade-out');
@@ -2393,11 +2139,10 @@ function openChat() {
 function addMsg(html, type) {
   const msgs = document.getElementById('chatMessages');
   const div = document.createElement('div');
-  div.className = `msg msg-${type}`;
+  div.className = 'msg msg-' + type;
   div.innerHTML = html;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
-  // Remove quick replies after user sends
   if (type === 'user') {
     const qr = document.getElementById('quickReplies');
     if (qr) qr.style.display = 'none';
@@ -2494,11 +2239,8 @@ function toggleFAQ(idx, total) {
   for (let i = 0; i < total; i++) {
     const item = document.getElementById('faq-item-' + i);
     if (!item) continue;
-    if (i === idx) {
-      item.classList.toggle('open');
-    } else {
-      item.classList.remove('open');
-    }
+    if (i === idx) item.classList.toggle('open');
+    else item.classList.remove('open');
   }
 }
 
@@ -2507,125 +2249,18 @@ function toggleFAQ(idx, total) {
 // ============================================================
 const prices = {
   monthly: { starter: '$99', growth: '$299', elite: '$799' },
-  annual: { starter: '$79', growth: '$239', elite: '$639' },
+  annual:  { starter: '$79', growth: '$239', elite: '$639' },
 };
 function setPlansToggle(mode) {
-  ['Monthly', 'Annual'].forEach(m => {
+  ['Monthly','Annual'].forEach(m => {
     const btn = document.getElementById('toggle' + m);
     if (btn) btn.classList.toggle('active', m.toLowerCase() === mode);
   });
   const p = prices[mode];
-  ['starter', 'growth', 'elite'].forEach(plan => {
+  ['starter','growth','elite'].forEach(plan => {
     const el = document.getElementById('price-' + plan);
     if (el) el.innerHTML = p[plan] + '<span>/mo</span>';
   });
-}
-
-// ============================================================
-// FORMS — SHARED UTILITIES
-// ============================================================
-function clearFieldErr(inputId, errId) {
-  const inp = document.getElementById(inputId);
-  const err = document.getElementById(errId);
-  if (inp) inp.classList.remove('error');
-  if (err) err.textContent = '';
-}
-
-function setErr(errId, msg) {
-  const el = document.getElementById(errId);
-  if (el) el.textContent = msg;
-}
-
-function markErr(inputId, errId, msg) {
-  const inp = document.getElementById(inputId);
-  if (inp) inp.classList.add('error');
-  setErr(errId, msg);
-}
-
-function togglePw(id, btn) {
-  const inp = document.getElementById(id);
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
-}
-
-function checkPwStrength(v) {
-  let score = 0;
-  if (v.length >= 8) score++;
-  if (/[A-Z]/.test(v)) score++;
-  if (/[0-9]/.test(v)) score++;
-  if (/[^A-Za-z0-9]/.test(v)) score++;
-  const bar = document.getElementById('pwBar');
-  const lbl = document.getElementById('pwLabel');
-  if (!bar) return;
-  const states = [
-    { w: '0%', c: '', t: '' },
-    { w: '33%', c: '#EF4444', t: 'Weak' },
-    { w: '66%', c: '#F59E0B', t: 'Medium' },
-    { w: '100%', c: '#22C55E', t: 'Strong 🔒' },
-  ];
-  const s = Math.min(score, 3);
-  bar.style.width = states[s].w;
-  bar.style.background = states[s].c;
-  if (lbl) { lbl.textContent = states[s].t; lbl.style.color = states[s].c; }
-}
-
-// ============================================================
-// LOGIN FORM
-// ============================================================
-function submitLogin(e) {
-  e.preventDefault();
-  const email = document.getElementById('l-email');
-  const pw = document.getElementById('l-pw');
-  let ok = true;
-  if (!email.value.trim()) { markErr('l-email', 'l-email-err', '⚠ Email is required.'); ok = false; }
-  else if (!/\S+@\S+\.\S+/.test(email.value)) { markErr('l-email', 'l-email-err', '⚠ Please enter a valid email.'); ok = false; }
-  if (!pw.value) { markErr('l-pw', 'l-pw-err', '⚠ Password is required.'); ok = false; }
-  else if (pw.value.length < 6) { markErr('l-pw', 'l-pw-err', '⚠ Password must be at least 6 characters.'); ok = false; }
-  if (ok) {
-    showToast('success', 'Login Successful!', 'Welcome back! Redirecting to your dashboard...');
-    setTimeout(() => navigate('dashboard'), 1200);
-  }
-}
-
-// ============================================================
-// SIGNUP FORM
-// ============================================================
-function submitSignup(e) {
-  e.preventDefault();
-  const name = document.getElementById('su-name');
-  const email = document.getElementById('su-email');
-  const phone = document.getElementById('su-phone');
-  const pw = document.getElementById('su-pw');
-  const cpw = document.getElementById('su-cpw');
-  const terms = document.getElementById('su-terms');
-  let ok = true;
-
-  if (!name.value.trim()) { markErr('su-name', 'su-name-err', '⚠ Full name is required.'); ok = false; }
-  if (!email.value.trim() || !/\S+@\S+\.\S+/.test(email.value)) { markErr('su-email', 'su-email-err', '⚠ Valid email required.'); ok = false; }
-  if (!phone.value.trim()) { markErr('su-phone', 'su-phone-err', '⚠ Phone number is required.'); ok = false; }
-  if (pw.value.length < 8) { markErr('su-pw', 'su-pw-err', '⚠ Password must be at least 8 characters.'); ok = false; }
-  if (cpw.value !== pw.value) { markErr('su-cpw', 'su-cpw-err', '⚠ Passwords do not match.'); ok = false; }
-  if (!terms.checked) { setErr('su-terms-err', '⚠ You must agree to the Terms of Service.'); ok = false; }
-
-  if (ok) {
-    showToast('success', 'Account Created!', 'Welcome to QuantVest! Redirecting to your dashboard...');
-    setTimeout(() => navigate('dashboard'), 1200);
-  }
-}
-
-// ============================================================
-// FORGOT PASSWORD FORM
-// ============================================================
-function submitForgot(e) {
-  e.preventDefault();
-  const email = document.getElementById('fp-email');
-  if (!email.value.trim() || !/\S+@\S+\.\S+/.test(email.value)) {
-    markErr('fp-email', 'fp-email-err', '⚠ Please enter a valid email address.');
-    return;
-  }
-  document.getElementById('fp-success').style.display = 'flex';
-  showToast('success', 'Reset Link Sent', `Check ${email.value} for your reset link.`);
-  email.value = '';
 }
 
 // ============================================================
@@ -2635,21 +2270,21 @@ function submitSupportForm(e) {
   e.preventDefault();
   let ok = true;
   const fields = [
-    ['sf-name', 'sf-name-err', 'Name is required.'],
-    ['sf-email', 'sf-email-err', 'Email is required.'],
-    ['sf-subject', 'sf-subject-err', 'Please select a subject.'],
-    ['sf-msg', 'sf-msg-err', 'Message is required.'],
+    { id:'sf-name',    errId:'sf-name-err',    msg:'Name is required.' },
+    { id:'sf-email',   errId:'sf-email-err',   msg:'Email is required.' },
+    { id:'sf-subject', errId:'sf-subject-err', msg:'Please select a subject.' },
+    { id:'sf-msg',     errId:'sf-msg-err',     msg:'Message is required.' },
   ];
-  fields.forEach(([id, eid]) => {
-    const el = document.getElementById(id);
-    if (el && !el.value.trim()) { markErr(id, eid, '⚠ ' + fields.find(f => f[0] === id)[2]); ok = false; }
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (el && !el.value.trim()) { markErr(f.id, f.errId, '⚠ ' + f.msg); ok = false; }
   });
   if (ok) {
     const suc = document.getElementById('sf-success');
-    suc.style.display = 'flex';
+    if (suc) suc.style.display = 'flex';
     showToast('success', 'Message Sent!', 'Our team will respond within 2 hours.');
     e.target.reset();
-    setTimeout(() => { suc.style.display = 'none'; }, 6000);
+    setTimeout(() => { if (suc) suc.style.display = 'none'; }, 6000);
   }
 }
 
@@ -2669,64 +2304,6 @@ function subscribeNewsletter() {
 }
 
 // ============================================================
-// DASHBOARD CHART
-// ============================================================
-function renderDashChart() {
-  const container = document.getElementById('dashChart');
-  if (!container || container.querySelector('svg')) return;
-
-  const vals = [21000, 21800, 22400, 21900, 23100, 23800, 24820];
-  const labels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-  const w = container.clientWidth || 600;
-  const h = 180;
-  const pad = { top: 20, right: 20, bottom: 30, left: 60 };
-  const iw = w - pad.left - pad.right;
-  const ih = h - pad.top - pad.bottom;
-  const min = Math.min(...vals) * 0.98;
-  const max = Math.max(...vals) * 1.01;
-
-  const xScale = i => pad.left + (i / (vals.length - 1)) * iw;
-  const yScale = v => pad.top + ih - ((v - min) / (max - min)) * ih;
-
-  const points = vals.map((v, i) => `${xScale(i)},${yScale(v)}`).join(' ');
-  const areaPoints = `${pad.left},${pad.top + ih} ${points} ${pad.left + iw},${pad.top + ih}`;
-
-  const svg = `
-    <svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:${h}px;">
-      <defs>
-        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="rgba(37,99,235,0.3)"/>
-          <stop offset="100%" stop-color="rgba(37,99,235,0)"/>
-        </linearGradient>
-      </defs>
-      <!-- Grid lines -->
-      ${[0,0.25,0.5,0.75,1].map(t => {
-        const y = pad.top + ih * (1-t);
-        const v = Math.round(min + (max-min)*t);
-        return `
-          <line x1="${pad.left}" y1="${y}" x2="${pad.left+iw}" y2="${y}" stroke="rgba(96,165,250,0.08)" stroke-width="1"/>
-          <text x="${pad.left-8}" y="${y+4}" text-anchor="end" font-size="10" fill="rgba(128,148,192,0.8)">$${(v/1000).toFixed(0)}k</text>`;
-      }).join('')}
-      <!-- Area -->
-      <polygon points="${areaPoints}" fill="url(#chartGrad)"/>
-      <!-- Line -->
-      <polyline points="${points}" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      <defs>
-        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#2563EB"/>
-          <stop offset="100%" stop-color="#06B6D4"/>
-        </linearGradient>
-      </defs>
-      <!-- Dots -->
-      ${vals.map((v, i) => `<circle cx="${xScale(i)}" cy="${yScale(v)}" r="4" fill="#06B6D4" stroke="var(--bg2)" stroke-width="2"/>`).join('')}
-      <!-- Labels -->
-      ${labels.map((l, i) => `<text x="${xScale(i)}" y="${h-8}" text-anchor="middle" font-size="10" fill="rgba(128,148,192,0.8)">${l}</text>`).join('')}
-    </svg>`;
-
-  container.innerHTML = svg;
-}
-
-// ============================================================
 // INIT
 // ============================================================
 function init() {
@@ -2736,7 +2313,6 @@ function init() {
   fetchCrypto();
   fetchTicker();
 
-  // Stagger activity
   setTimeout(() => {
     showActivity();
     setInterval(showActivity, 4500);
@@ -2749,4 +2325,4 @@ function init() {
 init();
 </script>
 </body>
-</html>
+</html> 
