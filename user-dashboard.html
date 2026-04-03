@@ -13,7 +13,8 @@
         .card { background: var(--card); padding: 25px; border-radius: 16px; border: 1px solid rgba(96,165,250,0.1); }
         .val { font-size: 28px; font-weight: bold; font-family: 'Syne'; margin-top: 10px; }
         .kyc-box { background: rgba(37, 99, 235, 0.05); border: 1px dashed var(--blue); padding: 30px; border-radius: 16px; text-align: center; }
-        button { background: var(--blue); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        button { background: var(--blue); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        button:hover { background: #1D4ED8; }
         input[type="text"] { width: 100%; padding: 12px; background: #020510; border: 1px solid var(--muted); border-radius: 8px; color: white; margin-bottom: 15px; }
     </style>
 </head>
@@ -21,6 +22,7 @@
     <div class="sidebar">
         <h2 style="font-family:Syne; color:var(--cyan)">QuantVest</h2>
         <p style="color:var(--muted)">Investor Account</p>
+        <button onclick="handleLogout()" style="margin-top: 20px; background: transparent; color: #EF4444; border: 1px solid #EF4444; width: 100%;">Sign Out</button>
     </div>
     <div class="main">
         <h1 style="font-family:Syne">Portfolio Overview</h1>
@@ -42,36 +44,73 @@
     </div>
 
     <script>
-        const supabase = supabase.createClient('YOUR_URL', 'YOUR_KEY');
+        // --- YOUR ACTUAL DATABASE CONNECTION ---
+        const SUPABASE_URL = 'https://wcajayygjtivdmnogcsj.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_o3lUhxgsVVe2_tD3QgXGsw_LSJskVs7';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function init() {
-            const { data: { user } } = await supabase.auth.getUser();
-            if(!user) return;
-
-            // Load Wallet
-            const { data: wallet } = await supabase.from('wallets').select('*').eq('user_id', user.id).single();
-            if(wallet) {
-                document.getElementById('balance').innerText = `$${wallet.balance}`;
-                document.getElementById('investment').innerText = `$${wallet.current_investment}`;
-                document.getElementById('aiEarnings').innerText = `$${wallet.ai_earnings}`;
-                document.getElementById('profit').innerText = `$${wallet.total_profit}`;
+            // Get current logged-in user
+            const { data: { user } } = await _supabase.auth.getUser();
+            
+            // Redirect back to login if not logged in
+            if(!user) {
+                window.location.href = 'index.html'; 
+                return;
             }
 
-            // Load KYC Status
-            const { data: profile } = await supabase.from('profiles').select('kyc_status').eq('id', user.id).single();
-            if(profile.kyc_status !== 'pending' || profile.kyc_document_url) {
+            // Load Wallet Data from Supabase
+            const { data: wallet, error: wError } = await _supabase
+                .from('wallets')
+                .select('*')
+                .eq('user_id', user.id)
+                .single();
+
+            if(wallet) {
+                document.getElementById('balance').innerText = `$${wallet.balance.toLocaleString()}`;
+                document.getElementById('investment').innerText = `$${wallet.current_investment.toLocaleString()}`;
+                document.getElementById('aiEarnings').innerText = `$${wallet.ai_earnings.toLocaleString()}`;
+                document.getElementById('profit').innerText = `$${wallet.total_profit.toLocaleString()}`;
+            }
+
+            // Load Profile / KYC Status from Supabase
+            const { data: profile } = await _supabase
+                .from('profiles')
+                .select('kyc_status, kyc_document_url')
+                .eq('id', user.id)
+                .single();
+
+            if(profile && (profile.kyc_status !== 'pending' || profile.kyc_document_url)) {
                 document.getElementById('kycForm').style.display = 'none';
                 document.getElementById('kycStatusText').innerText = `Status: ${profile.kyc_status.toUpperCase()}`;
+                document.getElementById('kycStatusText').style.color = profile.kyc_status === 'verified' ? '#22C55E' : '#EF4444';
             }
         }
 
         async function submitKYC() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await _supabase.auth.getUser();
             const url = document.getElementById('docUrl').value;
-            await supabase.from('profiles').update({ kyc_document_url: url }).eq('id', user.id);
-            alert("Documents submitted!");
-            location.reload();
+            
+            if(!url) return alert("Please provide a document URL");
+
+            const { error } = await _supabase
+                .from('profiles')
+                .update({ kyc_document_url: url, kyc_status: 'pending' })
+                .eq('id', user.id);
+
+            if(error) {
+                alert("Error: " + error.message);
+            } else {
+                alert("Documents submitted successfully!");
+                location.reload();
+            }
         }
+
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
         init();
     </script>
 </body>
