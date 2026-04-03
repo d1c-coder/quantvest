@@ -1387,6 +1387,8 @@ footer{
 </div>
 
 <!-- ==================== LOGIN PAGE ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <div class="page" id="page-login">
   <div class="auth-wrap">
     <div class="auth-card">
@@ -1396,26 +1398,28 @@ footer{
       </div>
       <h2 class="auth-title">Welcome Back</h2>
       <p class="auth-sub">Sign in to your account to continue investing</p>
-      <form onsubmit="submitLogin(event)" novalidate>
+      
+      <form id="loginForm" onsubmit="submitLogin(event)" novalidate>
         <div class="form-group">
           <label class="form-label" for="l-email">Email Address</label>
-          <input class="form-input" id="l-email" type="email" placeholder="you@example.com" autocomplete="email" oninput="clearFieldErr('l-email','l-email-err')"/>
-          <div class="error-msg" id="l-email-err"></div>
+          <input class="form-input" id="l-email" type="email" placeholder="you@example.com" autocomplete="email" oninput="clearFieldErr('l-email-err')"/>
+          <div class="error-msg" id="l-email-err" style="color: #EF4444; font-size: 0.8rem; margin-top: 4px;"></div>
         </div>
         <div class="form-group">
           <label class="form-label" for="l-pw">Password</label>
-          <div class="pw-wrap">
-            <input class="form-input" id="l-pw" type="password" placeholder="Enter your password" autocomplete="current-password" oninput="clearFieldErr('l-pw','l-pw-err')" style="padding-right:44px;"/>
-            <button type="button" class="pw-toggle" onclick="togglePw('l-pw',this)" aria-label="Toggle password">👁</button>
+          <div class="pw-wrap" style="position: relative;">
+            <input class="form-input" id="l-pw" type="password" placeholder="Enter your password" autocomplete="current-password" oninput="clearFieldErr('l-pw-err')" style="padding-right:44px; width: 100%;"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('l-pw',this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted);">👁</button>
           </div>
-          <div class="error-msg" id="l-pw-err"></div>
+          <div class="error-msg" id="l-pw-err" style="color: #EF4444; font-size: 0.8rem; margin-top: 4px;"></div>
         </div>
         <div class="remember-row">
           <label><input type="checkbox"/> Remember me</label>
           <a href="#" class="forgot-link" onclick="navigate('forgot');return false;">Forgot Password?</a>
         </div>
-        <button type="submit" class="btn-primary auth-btn">Sign In</button>
+        <button type="submit" id="loginBtn" class="btn-primary auth-btn" style="width: 100%; margin-top: 15px;">Sign In</button>
       </form>
+      
       <div class="auth-divider">or continue with</div>
       <div style="display:flex;gap:10px;">
         <button class="social-btn" onclick="showToast('info','Coming Soon','Google login is coming soon!')">🅶 Google</button>
@@ -1426,6 +1430,76 @@ footer{
   </div>
 </div>
 
+<script>
+  // Initialize Supabase
+  const SUPABASE_URL = 'https://wcajayygjtivdmnogcsj.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_o3lUhxgsVVe2_tD3QgXGsw_LSJskVs7';
+  const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  async function submitLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('l-email').value;
+    const password = document.getElementById('l-pw').value;
+    const loginBtn = document.getElementById('loginBtn');
+    
+    // Clear previous errors
+    document.getElementById('l-email-err').innerText = "";
+    document.getElementById('l-pw-err').innerText = "";
+
+    loginBtn.innerText = "Authenticating...";
+    loginBtn.disabled = true;
+
+    try {
+      // Login attempt
+      const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        document.getElementById('l-pw-err').innerText = error.message;
+        loginBtn.innerText = "Sign In";
+        loginBtn.disabled = false;
+        return;
+      }
+
+      // Check user role in public.profiles table
+      const { data: profile, error: profileErr } = await _supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profile?.role === 'admin') {
+        window.location.href = 'admin-dashboard.html';
+      } else {
+        window.location.href = 'user-dashboard.html';
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("An unexpected error occurred.");
+      loginBtn.innerText = "Sign In";
+      loginBtn.disabled = false;
+    }
+  }
+
+  function clearFieldErr(errId) {
+    document.getElementById(errId).innerText = "";
+  }
+
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === "password") {
+      input.type = "text";
+      btn.innerText = "🙈";
+    } else {
+      input.type = "password";
+      btn.innerText = "👁";
+    }
+  }
+</script>
 <!-- ==================== SIGNUP PAGE ==================== -->
 <div class="page" id="page-signup">
   <div class="auth-wrap">
