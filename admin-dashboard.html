@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QuantVest Admin — Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --bg: #020510; --card: #0c1535; --blue: #2563EB; --white: #F0F4FF; }
+        body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; margin: 0; display: flex; }
+        .main { flex: 1; padding: 50px; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
+        .panel { background: var(--card); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #2563EB; background: #020510; color: white; }
+        button { background: var(--blue); cursor: pointer; border: none; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .btn-small { width: auto; padding: 5px 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <h1 style="font-family:Syne">Global Administration</h1>
+        
+        <div class="admin-grid">
+            <div class="panel">
+                <h3 style="font-family:Syne">Inject Funds</h3>
+                <input type="text" id="targetEmail" placeholder="User Email">
+                <input type="number" id="amount" placeholder="Amount ($)">
+                <select id="targetField">
+                    <option value="balance">Add to Balance</option>
+                    <option value="current_investment">Add to Investment</option>
+                    <option value="ai_earnings">Add to AI Earnings</option>
+                </select>
+                <button onclick="injectFunds()">Execute Transaction</button>
+            </div>
+
+            <div class="panel">
+                <h3 style="font-family:Syne">KYC Approval Queue</h3>
+                <table id="kycTable">
+                    <thead><tr><th>User</th><th>Document</th><th>Action</th></tr></thead>
+                    <tbody id="kycBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabase = supabase.createClient('YOUR_URL', 'SERVICE_ROLE_KEY'); // Use Service Key for Admin powers
+
+        async function loadKYC() {
+            const { data } = await supabase.from('profiles').select('*').not('kyc_document_url', 'is', null).eq('kyc_status', 'pending');
+            const body = document.getElementById('kycBody');
+            body.innerHTML = data.map(u => `
+                <tr>
+                    <td>${u.email}</td>
+                    <td><a href="${u.kyc_document_url}" target="_blank" style="color:#06B6D4">View ID</a></td>
+                    <td>
+                        <button class="btn-small" onclick="verifyUser('${u.id}', 'verified')">Approve</button>
+                        <button class="btn-small" style="background:red" onclick="verifyUser('${u.id}', 'rejected')">X</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function verifyUser(id, status) {
+            await supabase.from('profiles').update({ kyc_status: status }).eq('id', id);
+            alert("Status updated");
+            loadKYC();
+        }
+
+        async function injectFunds() {
+            const email = document.getElementById('targetEmail').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const field = document.getElementById('targetField').value;
+
+            const { data: profile } = await supabase.from('profiles').select('id').eq('email', email).single();
+            if(!profile) return alert("User not found");
+
+            const { data: wallet } = await supabase.from('wallets').select(field).eq('user_id', profile.id).single();
+            const newVal = parseFloat(wallet[field]) + amount;
+
+            const update = {}; update[field] = newVal;
+            await supabase.from('wallets').update(update).eq('user_id', profile.id);
+            alert("Funds successfully injected");
+        }
+
+        loadKYC();
+    </script>
+</body>
+</html>
