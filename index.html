@@ -1397,108 +1397,171 @@ footer{
         <span class="nav-brand">QuantVest</span>
       </div>
       <h2 class="auth-title">Welcome Back</h2>
-      <p class="auth-sub">Sign in to your account to continue investing</p>
-      
       <form id="loginForm" onsubmit="submitLogin(event)" novalidate>
         <div class="form-group">
-          <label class="form-label" for="l-email">Email Address</label>
-          <input class="form-input" id="l-email" type="email" placeholder="you@example.com" autocomplete="email" oninput="clearFieldErr('l-email-err')"/>
-          <div class="error-msg" id="l-email-err" style="color: #EF4444; font-size: 0.8rem; margin-top: 4px;"></div>
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="l-email" type="email" placeholder="you@example.com" oninput="clearFieldErr('l-email-err')"/>
+          <div class="error-msg" id="l-email-err" style="color:#EF4444; font-size:0.8rem; margin-top:4px;"></div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="l-pw">Password</label>
-          <div class="pw-wrap" style="position: relative;">
-            <input class="form-input" id="l-pw" type="password" placeholder="Enter your password" autocomplete="current-password" oninput="clearFieldErr('l-pw-err')" style="padding-right:44px; width: 100%;"/>
-            <button type="button" class="pw-toggle" onclick="togglePw('l-pw',this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted);">👁</button>
+          <label class="form-label">Password</label>
+          <div style="position:relative;">
+            <input class="form-input" id="l-pw" type="password" placeholder="••••••••" oninput="clearFieldErr('l-pw-err')" style="padding-right:44px;"/>
+            <button type="button" onclick="togglePw('l-pw',this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted);">👁</button>
           </div>
-          <div class="error-msg" id="l-pw-err" style="color: #EF4444; font-size: 0.8rem; margin-top: 4px;"></div>
+          <div class="error-msg" id="l-pw-err" style="color:#EF4444; font-size:0.8rem; margin-top:4px;"></div>
         </div>
-        <div class="remember-row">
-          <label><input type="checkbox"/> Remember me</label>
-          <a href="#" class="forgot-link" onclick="navigate('forgot');return false;">Forgot Password?</a>
-        </div>
-        <button type="submit" id="loginBtn" class="btn-primary auth-btn" style="width: 100%; margin-top: 15px;">Sign In</button>
+        <button type="submit" id="loginBtn" class="btn-primary auth-btn" style="width:100%; margin-top:10px;">Sign In</button>
       </form>
-      
-      <div class="auth-divider">or continue with</div>
-      <div style="display:flex;gap:10px;">
-        <button class="social-btn" onclick="showToast('info','Coming Soon','Google login is coming soon!')">🅶 Google</button>
-        <button class="social-btn" onclick="showToast('info','Coming Soon','Apple login is coming soon!')">🍎 Apple</button>
-      </div>
       <div class="auth-link">Don't have an account? <a onclick="navigate('signup')">Sign Up Free</a></div>
     </div>
   </div>
 </div>
 
+<div class="page" id="page-signup">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-box">📈</div>
+        <span class="nav-brand">QuantVest</span>
+      </div>
+      <h2 class="auth-title">Create Account</h2>
+      <form id="signupForm" onsubmit="submitSignup(event)" novalidate>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" id="su-name" type="text" placeholder="John Doe" oninput="clearFieldErr('su-name-err')"/>
+          <div class="error-msg" id="su-name-err" style="color:#EF4444; font-size:0.8rem;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" oninput="clearFieldErr('su-email-err')"/>
+          <div class="error-msg" id="su-email-err" style="color:#EF4444; font-size:0.8rem;"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div style="position:relative;">
+            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value); clearFieldErr('su-pw-err')" style="padding-right:44px;"/>
+            <button type="button" onclick="togglePw('su-pw',this)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted);">👁</button>
+          </div>
+          <div class="pw-strength" style="height:4px; background:rgba(255,255,255,0.1); margin-top:8px; border-radius:2px;">
+            <div id="pwBar" style="height:100%; width:0%; transition:0.3s; border-radius:2px;"></div>
+          </div>
+          <div id="pwLabel" style="font-size:0.7rem; margin-top:4px; color:var(--muted);"></div>
+          <div class="error-msg" id="su-pw-err" style="color:#EF4444; font-size:0.8rem;"></div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; margin:15px 0;">
+          <input type="checkbox" id="su-terms"/>
+          <label for="su-terms" style="font-size:0.85rem; color:var(--muted);">I agree to the Terms</label>
+        </div>
+        <div id="su-terms-err" style="color:#EF4444; font-size:0.8rem; margin-bottom:10px;"></div>
+        <button type="submit" id="signupBtn" class="btn-primary auth-btn" style="width:100%;">Create Account →</button>
+      </form>
+      <div class="auth-link">Already have an account? <a onclick="navigate('login')">Log In</a></div>
+    </div>
+  </div>
+</div>
 <script>
-  // Initialize Supabase
-  const SUPABASE_URL = 'https://wcajayygjtivdmnogcsj.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_o3lUhxgsVVe2_tD3QgXGsw_LSJskVs7';
-  const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+ // --- SUPABASE CONFIG ---
+const SUPABASE_URL = 'https://wcajayygjtivdmnogcsj.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_o3lUhxgsVVe2_tD3QgXGsw_LSJskVs7';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function submitLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('l-email').value;
-    const password = document.getElementById('l-pw').value;
-    const loginBtn = document.getElementById('loginBtn');
-    
-    // Clear previous errors
-    document.getElementById('l-email-err').innerText = "";
-    document.getElementById('l-pw-err').innerText = "";
+// --- SIGNUP LOGIC ---
+async function submitSignup(event) {
+  event.preventDefault();
+  
+  const elName = document.getElementById('su-name');
+  const elEmail = document.getElementById('su-email');
+  const elPw = document.getElementById('su-pw');
+  const elTerms = document.getElementById('su-terms');
+  const btn = document.getElementById('signupBtn');
 
-    loginBtn.innerText = "Authenticating...";
-    loginBtn.disabled = true;
+  // Safety Check
+  if (!elName || !elEmail || !elPw || !elTerms) {
+    console.error("Critical Error: Signup elements not found in HTML.");
+    return;
+  }
 
-    try {
-      // Login attempt
-      const { data, error } = await _supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+  if (!elTerms.checked) {
+    document.getElementById('su-terms-err').innerText = "Please accept the terms";
+    return;
+  }
 
-      if (error) {
-        document.getElementById('l-pw-err').innerText = error.message;
-        loginBtn.innerText = "Sign In";
-        loginBtn.disabled = false;
-        return;
-      }
+  btn.innerText = "Creating Account...";
+  btn.disabled = true;
 
-      // Check user role in public.profiles table
-      const { data: profile, error: profileErr } = await _supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
+  try {
+    const { data, error } = await _supabase.auth.signUp({
+      email: elEmail.value,
+      password: elPw.value,
+      options: { data: { full_name: elName.value } }
+    });
 
-      if (profile?.role === 'admin') {
-        window.location.href = 'admin-dashboard.html';
-      } else {
-        window.location.href = 'user-dashboard.html';
-      }
+    if (error) throw error;
 
-    } catch (err) {
-      console.error(err);
-      alert("An unexpected error occurred.");
-      loginBtn.innerText = "Sign In";
-      loginBtn.disabled = false;
+    // Save Name to Profile
+    if (data.user) {
+      await _supabase.from('profiles').update({ full_name: elName.value }).eq('id', data.user.id);
+      window.location.href = 'user-dashboard.html';
     }
+  } catch (err) {
+    document.getElementById('su-email-err').innerText = err.message;
+    btn.innerText = "Create Account →";
+    btn.disabled = false;
   }
+}
 
-  function clearFieldErr(errId) {
-    document.getElementById(errId).innerText = "";
-  }
+// --- LOGIN LOGIC ---
+async function submitLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('l-email').value;
+  const password = document.getElementById('l-pw').value;
+  const btn = document.getElementById('loginBtn');
 
-  function togglePw(id, btn) {
-    const input = document.getElementById(id);
-    if (input.type === "password") {
-      input.type = "text";
-      btn.innerText = "🙈";
-    } else {
-      input.type = "password";
-      btn.innerText = "👁";
-    }
+  btn.innerText = "Authenticating...";
+  btn.disabled = true;
+
+  try {
+    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+
+    const { data: profile } = await _supabase.from('profiles').select('role').eq('id', data.user.id).single();
+    window.location.href = (profile?.role === 'admin') ? 'admin-dashboard.html' : 'user-dashboard.html';
+  } catch (err) {
+    document.getElementById('l-pw-err').innerText = err.message;
+    btn.innerText = "Sign In";
+    btn.disabled = false;
   }
+}
+
+// --- UI HELPERS ---
+function clearFieldErr(id) {
+  const err = document.getElementById(id);
+  if (err) err.innerText = "";
+}
+
+function togglePw(id, btn) {
+  const input = document.getElementById(id);
+  if (input.type === "password") {
+    input.type = "text"; btn.innerText = "🙈";
+  } else {
+    input.type = "password"; btn.innerText = "👁";
+  }
+}
+
+function checkPwStrength(pw) {
+  const bar = document.getElementById('pwBar');
+  const label = document.getElementById('pwLabel');
+  if(!bar) return;
+  let s = 0;
+  if (pw.length >= 8) s += 25;
+  if (/[A-Z]/.test(pw)) s += 25;
+  if (/[0-9]/.test(pw)) s += 25;
+  if (/[^A-Za-z0-9]/.test(pw)) s += 25;
+  bar.style.width = s + "%";
+  bar.style.background = s < 50 ? "#EF4444" : s < 75 ? "#F59E0B" : "#22C55E";
+  label.innerText = s < 50 ? "Weak" : s < 75 ? "Fair" : "Strong";
+}
 </script>
 <!-- ==================== SIGNUP PAGE ==================== -->
 <div class="page" id="page-signup">
