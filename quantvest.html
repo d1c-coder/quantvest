@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuantVest — Invest Without Limits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #020510;
+  --bg2: #060c1e;
+  --card: #080f26;
+  --card2: #0c1535;
+  --blue: #2563EB;
+  --blue-light: #3B82F6;
+  --blue-bright: #60A5FA;
+  --blue-glow: rgba(37,99,235,0.35);
+  --cyan: #06B6D4;
+  --cyan-glow: rgba(6,182,212,0.25);
+  --white: #F0F4FF;
+  --muted: #8094C0;
+  --gain: #22C55E;
+  --loss: #EF4444;
+  --warn: #F59E0B;
+  --border: rgba(96,165,250,0.12);
+  --border-bright: rgba(96,165,250,0.35);
+  --radius: 16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--white);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;}
+
+/* AURORA */
+.aurora{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;overflow:hidden;
+}
+.aurora::before{
+  content:'';position:absolute;
+  width:900px;height:900px;
+  background:radial-gradient(ellipse,rgba(37,99,235,0.18) 0%,transparent 70%);
+  top:-200px;left:-200px;
+  animation:auroraMove1 18s ease-in-out infinite alternate;
+}
+.aurora::after{
+  content:'';position:absolute;
+  width:700px;height:700px;
+  background:radial-gradient(ellipse,rgba(6,182,212,0.12) 0%,transparent 70%);
+  bottom:-100px;right:-100px;
+  animation:auroraMove2 22s ease-in-out infinite alternate;
+}
+@keyframes auroraMove1{0%{transform:translate(0,0) scale(1);}100%{transform:translate(200px,150px) scale(1.3);}}
+@keyframes auroraMove2{0%{transform:translate(0,0) scale(1);}100%{transform:translate(-150px,-100px) scale(1.2);}}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px;}
+
+/* ===== NAVBAR ===== */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;height:72px;
+  background:rgba(2,5,16,0.88);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  transition:background 0.3s;
+}
+.nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer;}
+.logo-box{
+  width:42px;height:42px;
+  border:2px solid var(--blue-light);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(37,99,235,0.2),rgba(6,182,212,0.1));
+  font-size:1.2rem;
+}
+.nav-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;
+  background:linear-gradient(135deg,#60A5FA,#06B6D4);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;align-items:center;gap:1.8rem;}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:0.92rem;font-weight:500;
+  transition:color 0.2s;position:relative;padding-bottom:2px;cursor:pointer;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-2px;left:0;width:0;height:2px;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  transition:width 0.25s;border-radius:2px;
+}
+.nav-links a:hover,.nav-links a.active{color:var(--white);}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+.nav-btns{display:flex;gap:10px;align-items:center;}
+.btn-ghost{background:transparent;border:1px solid var(--border-bright);color:var(--blue-bright);
+  padding:8px 20px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;
+  font-size:0.88rem;font-weight:500;transition:all 0.2s;}
+.btn-ghost:hover{background:rgba(96,165,250,0.1);border-color:var(--blue-light);}
+.btn-primary{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border:none;color:#fff;padding:8px 22px;border-radius:8px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:600;
+  transition:all 0.25s;box-shadow:0 0 20px rgba(37,99,235,0.3);
+}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(37,99,235,0.55);}
+.btn-primary:active{transform:translateY(0);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;
+  background:transparent;border:none;}
+.hamburger span{width:24px;height:2px;background:var(--white);border-radius:2px;
+  transition:all 0.3s;display:block;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* MOBILE MENU */
+.mobile-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1050;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(4px);
+}
+.mobile-overlay.open{opacity:1;pointer-events:all;}
+.mobile-menu{
+  position:fixed;top:0;right:-100%;width:300px;height:100vh;
+  background:var(--bg2);z-index:1100;
+  transition:right 0.35s cubic-bezier(0.4,0,0.2,1);
+  border-left:1px solid var(--border);
+  padding:0;
+  display:flex;flex-direction:column;
+}
+.mobile-menu.open{right:0;}
+.mobile-menu-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 24px;border-bottom:1px solid var(--border);
+}
+.mobile-menu-body{padding:16px 24px;display:flex;flex-direction:column;gap:4px;flex:1;}
+.mobile-menu a{
+  color:var(--white);text-decoration:none;font-size:1rem;
+  font-weight:500;padding:14px 12px;border-radius:10px;
+  transition:background 0.2s;display:block;cursor:pointer;
+}
+.mobile-menu a:hover{background:rgba(96,165,250,0.08);}
+.mobile-menu-footer{padding:16px 24px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--border);}
+.close-menu{background:transparent;border:1px solid var(--border);color:var(--muted);
+  font-size:1.1rem;cursor:pointer;width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.close-menu:hover{color:var(--white);border-color:var(--border-bright);}
+
+/* PAGES */
+.page{display:none;min-height:calc(100vh - 72px);padding-top:72px;position:relative;z-index:1;}
+.page.active{display:block;}
+
+/* ===== SCROLL TO TOP ===== */
+.scroll-top{
+  position:fixed;bottom:100px;right:28px;z-index:800;
+  width:44px;height:44px;border-radius:12px;border:1px solid var(--border-bright);
+  background:rgba(8,15,38,0.9);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--blue-bright);font-size:1.1rem;cursor:pointer;
+  opacity:0;pointer-events:none;transition:all 0.3s;
+}
+.scroll-top.visible{opacity:1;pointer-events:all;}
+.scroll-top:hover{background:rgba(37,99,235,0.2);transform:translateY(-2px);}
+
+/* ===== COOKIE BANNER ===== */
+.cookie-banner{
+  position:fixed;bottom:0;left:0;right:0;z-index:2000;
+  background:rgba(6,12,30,0.97);border-top:1px solid var(--border-bright);
+  padding:16px 5%;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  backdrop-filter:blur(20px);flex-wrap:wrap;
+  transform:translateY(100%);transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.cookie-banner.show{transform:translateY(0);}
+.cookie-text{font-size:0.85rem;color:var(--muted);max-width:640px;}
+.cookie-text a{color:var(--blue-bright);}
+.cookie-btns{display:flex;gap:10px;flex-shrink:0;}
+.btn-sm{padding:8px 18px;font-size:0.83rem;border-radius:8px;}
+
+/* ===== TOAST NOTIFICATIONS ===== */
+.toast-stack{
+  position:fixed;top:90px;right:20px;z-index:1500;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none;
+}
+.toast-notif{
+  background:rgba(8,15,38,0.97);border:1px solid var(--border-bright);
+  border-radius:12px;padding:14px 18px;min-width:280px;max-width:340px;
+  display:flex;align-items:flex-start;gap:12px;pointer-events:all;
+  box-shadow:0 20px 50px rgba(0,0,0,0.5);
+  animation:toastSlideIn 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.toast-notif.removing{animation:toastSlideOut 0.3s forwards;}
+@keyframes toastSlideIn{from{opacity:0;transform:translateX(100%);}to{opacity:1;transform:translateX(0);}}
+@keyframes toastSlideOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(100%);}}
+.toast-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+.toast-body{flex:1;}
+.toast-title{font-weight:600;font-size:0.88rem;margin-bottom:2px;}
+.toast-msg{font-size:0.8rem;color:var(--muted);line-height:1.4;}
+.toast-close{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:0.9rem;padding:0;flex-shrink:0;}
+.toast-notif.success{border-color:rgba(34,197,94,0.35);}
+.toast-notif.error{border-color:rgba(239,68,68,0.35);}
+.toast-notif.info{border-color:rgba(96,165,250,0.35);}
+
+/* ===== HERO ===== */
+.hero{
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;
+  padding:5rem 5% 4rem;align-items:center;max-width:1400px;margin:0 auto;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(37,99,235,0.12);border:1px solid rgba(37,99,235,0.3);
+  border-radius:999px;padding:6px 16px;font-size:0.82rem;color:var(--blue-bright);
+  margin-bottom:1.5rem;
+}
+.hero-badge-dot{width:7px;height:7px;background:var(--cyan);border-radius:50%;
+  animation:pulse 2s infinite;}
+.hero h1{font-size:clamp(2.4rem,5vw,4rem);font-weight:800;line-height:1.1;margin-bottom:1.2rem;}
+.hero h1 span{
+  background:linear-gradient(135deg,#60A5FA,#06B6D4,#818CF8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{color:var(--muted);font-size:1.1rem;line-height:1.7;margin-bottom:2rem;max-width:500px;}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-xl{padding:14px 32px;font-size:1rem;border-radius:10px;}
+.btn-ghost-xl{background:transparent;border:1px solid var(--border-bright);color:var(--white);
+  padding:14px 32px;border-radius:10px;cursor:pointer;font-size:1rem;font-weight:500;
+  font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.btn-ghost-xl:hover{background:rgba(96,165,250,0.08);border-color:var(--blue-light);}
+.hero-img{
+  width:100%;max-width:520px;height:380px;
+  border:1px solid var(--border-bright);border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:12px;
+  background:linear-gradient(135deg,rgba(8,15,38,0.95),rgba(12,21,53,0.9));
+  position:relative;overflow:hidden;margin-left:auto;
+}
+.hero-img-inner{text-align:center;position:relative;z-index:1;}
+.hero-img-icon{font-size:3rem;margin-bottom:12px;}
+.hero-img-label{color:var(--muted);font-size:0.85rem;letter-spacing:0.05em;}
+.hero-img::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(37,99,235,0.07),rgba(6,182,212,0.07));
+}
+.hero-img-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(96,165,250,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(96,165,250,0.05) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.hero-stats{display:flex;gap:12px;margin-top:2rem;flex-wrap:wrap;}
+.stat-badge{
+  background:rgba(8,15,38,0.9);backdrop-filter:blur(10px);
+  border:1px solid var(--border-bright);border-radius:12px;
+  padding:10px 18px;
+}
+.stat-badge .val{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:var(--blue-bright);}
+.stat-badge .lbl{font-size:0.72rem;color:var(--muted);}
+
+/* ===== TICKER ===== */
+.ticker-wrap{
+  background:rgba(6,12,30,0.95);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);padding:12px 0;overflow:hidden;
+  position:relative;
+}
+.ticker-wrap::before,.ticker-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;
+}
+.ticker-wrap::before{left:0;background:linear-gradient(90deg,rgba(6,12,30,1),transparent);}
+.ticker-wrap::after{right:0;background:linear-gradient(-90deg,rgba(6,12,30,1),transparent);}
+.ticker-track{display:flex;width:max-content;}
+.ticker-track-inner{display:flex;animation:tickerScroll 40s linear infinite;}
+.ticker-track-inner:hover{animation-play-state:paused;}
+.ticker-item{
+  display:flex;align-items:center;gap:8px;
+  padding:0 28px;white-space:nowrap;font-size:0.88rem;
+  border-right:1px solid var(--border);
+}
+.ticker-sym{font-weight:700;color:var(--white);font-family:'Syne',sans-serif;}
+.ticker-price{color:var(--muted);}
+.ticker-change{font-weight:600;}
+.ticker-change.up{color:var(--gain);}
+.ticker-change.down{color:var(--loss);}
+@keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* SHIMMER */
+.shimmer{
+  background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%);
+  background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;
+}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* ===== SECTIONS ===== */
+.section{padding:5rem 5%;max-width:1400px;margin:0 auto;}
+.section-tag{
+  display:inline-block;font-size:0.78rem;font-weight:600;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--cyan);margin-bottom:0.8rem;
+}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;margin-bottom:0.6rem;}
+.section-sub{color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:3rem;}
+
+/* ===== CARDS ===== */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.5rem;transition:all 0.3s;
+}
+.card:hover{border-color:var(--border-bright);transform:translateY(-4px);
+  box-shadow:0 20px 60px rgba(37,99,235,0.15);}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;}
+
+/* ===== CRYPTO & STOCK CARDS ===== */
+.crypto-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:all 0.3s;cursor:default;}
+.crypto-card:hover{border-color:var(--border-bright);box-shadow:0 0 30px rgba(37,99,235,0.18);transform:translateY(-3px);}
+.crypto-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;}
+.crypto-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;}
+.crypto-sym{color:var(--muted);font-size:0.8rem;margin-top:2px;}
+.crypto-icon{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.crypto-price{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:4px;}
+.crypto-change{font-size:0.88rem;font-weight:600;}
+.mini-bars{display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:12px;}
+.mini-bar{width:8px;background:rgba(37,99,235,0.25);border-radius:2px 2px 0 0;transition:background 0.3s;}
+.mini-bar.up{background:rgba(34,197,94,0.45);}
+.mini-bar.down{background:rgba(239,68,68,0.45);}
+.skel{border-radius:8px;}
+.skel-line{height:14px;border-radius:4px;margin-bottom:8px;}
+
+/* FEATURES */
+.feat-icon{width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(37,99,235,0.2),rgba(6,182,212,0.1));
+  border:1px solid rgba(37,99,235,0.3);
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;}
+.feat-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;}
+.feat-desc{color:var(--muted);font-size:0.9rem;line-height:1.65;}
+
+/* TESTIMONIALS */
+.test-stars{color:#FBBF24;font-size:1rem;margin-bottom:0.8rem;}
+.test-quote{color:var(--muted);font-size:0.92rem;line-height:1.7;margin-bottom:1rem;font-style:italic;}
+.test-author{display:flex;align-items:center;gap:10px;}
+.test-avatar{width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;}
+.test-name{font-weight:600;font-size:0.9rem;}
+.test-role{color:var(--muted);font-size:0.78rem;}
+
+/* ===== LIVE ACTIVITY ===== */
+.activity-float{
+  position:fixed;bottom:108px;left:24px;z-index:700;width:300px;
+}
+.activity-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.live-dot{width:7px;height:7px;background:var(--gain);border-radius:50%;animation:pulse 2s infinite;}
+.activity-toast{
+  background:rgba(6,12,30,0.97);backdrop-filter:blur(20px);
+  border:1px solid var(--border-bright);border-radius:14px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;
+  animation:actToastIn 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.activity-toast.fade-out{animation:actToastOut 0.4s forwards;}
+@keyframes actToastIn{from{opacity:0;transform:translateX(-20px) scale(0.96);}to{opacity:1;transform:translateX(0) scale(1);}}
+@keyframes actToastOut{from{opacity:1;}to{opacity:0;transform:translateX(-10px);}}
+.act-avatar{width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;}
+.act-text{flex:1;}
+.act-name{font-weight:600;font-size:0.82rem;}
+.act-msg{color:var(--muted);font-size:0.78rem;line-height:1.4;}
+.act-time{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4);}50%{opacity:0.6;box-shadow:0 0 0 4px rgba(34,197,94,0);}}
+
+/* ===== CHATBOT ===== */
+.chat-fab{
+  position:fixed;bottom:28px;right:28px;z-index:850;
+  width:58px;height:58px;border-radius:50%;cursor:pointer;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border:none;display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;box-shadow:0 0 30px rgba(37,99,235,0.5);
+  transition:all 0.3s;
+}
+.chat-fab:hover{transform:scale(1.08);box-shadow:0 0 40px rgba(37,99,235,0.7);}
+.chat-fab-badge{
+  position:absolute;top:-3px;right:-3px;
+  width:18px;height:18px;border-radius:50%;
+  background:var(--loss);border:2px solid var(--bg);
+  font-size:0.65rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.chat-panel{
+  position:fixed;bottom:100px;right:28px;z-index:900;
+  width:340px;height:480px;
+  background:var(--bg2);border:1px solid var(--border-bright);border-radius:20px;
+  display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  transform:translateY(30px) scale(0.94);opacity:0;pointer-events:none;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.chat-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:all;}
+.chat-header{
+  padding:16px 18px;
+  background:linear-gradient(135deg,rgba(37,99,235,0.25),rgba(6,182,212,0.12));
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.chat-header-left{display:flex;align-items:center;gap:10px;}
+.chat-avatar{width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.chat-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;}
+.chat-status{font-size:0.72rem;color:var(--gain);display:flex;align-items:center;gap:5px;margin-top:2px;}
+.chat-status-dot{width:6px;height:6px;background:var(--gain);border-radius:50%;animation:pulse 2s infinite;}
+.chat-close{background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font-size:1.2rem;width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.chat-close:hover{background:rgba(255,255,255,0.08);color:var(--white);}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.msg{max-width:82%;padding:10px 14px;border-radius:14px;font-size:0.84rem;line-height:1.55;word-break:break-word;}
+.msg-bot{background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.2);
+  color:var(--white);align-self:flex-start;border-bottom-left-radius:4px;}
+.msg-user{background:linear-gradient(135deg,rgba(37,99,235,0.25),rgba(6,182,212,0.15));
+  border:1px solid rgba(6,182,212,0.2);color:var(--white);align-self:flex-end;border-bottom-right-radius:4px;}
+.msg-typing{display:flex;gap:4px;padding:14px;align-self:flex-start;}
+.typing-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);
+  animation:typingBounce 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+.chat-quick-replies{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;}
+.quick-reply{
+  background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.25);
+  border-radius:20px;padding:5px 12px;font-size:0.75rem;cursor:pointer;
+  color:var(--blue-bright);font-family:'DM Sans',sans-serif;transition:all 0.2s;
+}
+.quick-reply:hover{background:rgba(37,99,235,0.2);}
+.chat-input-row{
+  display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--border);flex-shrink:0;
+}
+.chat-input{
+  flex:1;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;
+  transition:border-color 0.2s;
+}
+.chat-input:focus{border-color:var(--blue-light);}
+.chat-send{
+  width:40px;height:40px;border-radius:10px;border:none;cursor:pointer;flex-shrink:0;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  transition:all 0.2s;
+}
+.chat-send:hover{transform:scale(1.08);}
+
+/* ===== PLANS ===== */
+.plans-toggle{display:flex;align-items:center;gap:12px;margin-bottom:3rem;justify-content:center;}
+.toggle-btn{
+  padding:9px 22px;border-radius:8px;cursor:pointer;border:1px solid var(--border);
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.9rem;
+  background:transparent;color:var(--muted);transition:all 0.2s;
+}
+.toggle-btn.active{background:rgba(37,99,235,0.2);border-color:var(--blue-light);color:var(--white);}
+.off-badge{
+  background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);
+  color:var(--gain);font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:6px;
+  margin-left:6px;
+}
+.plan-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:2rem;position:relative;transition:all 0.3s;
+}
+.plan-card.popular{border-color:var(--blue-light);box-shadow:0 0 50px rgba(37,99,235,0.2);}
+.plan-card:hover{transform:translateY(-4px);}
+.plan-card.popular:hover{box-shadow:0 0 70px rgba(37,99,235,0.35);}
+.popular-badge{
+  position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;font-size:0.75rem;font-weight:700;padding:5px 20px;border-radius:999px;
+  font-family:'Syne',sans-serif;letter-spacing:0.04em;white-space:nowrap;
+}
+.plan-name{font-family:'Syne',sans-serif;font-weight:800;font-size:0.85rem;
+  letter-spacing:0.12em;color:var(--muted);margin-bottom:0.5rem;}
+.plan-price{font-family:'Syne',sans-serif;font-weight:800;font-size:2.6rem;margin-bottom:0.3rem;}
+.plan-price span{font-size:1rem;font-weight:400;color:var(--muted);}
+.plan-desc{color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;line-height:1.5;}
+.plan-divider{height:1px;background:var(--border);margin:1.2rem 0;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;}
+.plan-features li{display:flex;align-items:flex-start;gap:8px;font-size:0.87rem;color:var(--muted);}
+.plan-features li .check{color:var(--blue-bright);font-weight:700;flex-shrink:0;margin-top:1px;}
+.plan-features li.faded{opacity:0.4;}
+.plan-features li.faded .check{color:var(--muted);}
+
+/* ===== FAQ ===== */
+.faq-item{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px;
+  transition:border-color 0.2s;}
+.faq-item.open{border-color:rgba(37,99,235,0.4);}
+.faq-q{
+  width:100%;background:var(--card);border:none;color:var(--white);
+  padding:18px 20px;text-align:left;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.95rem;
+  transition:background 0.2s;gap:12px;
+}
+.faq-q:hover{background:var(--card2);}
+.faq-chevron{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(96,165,250,0.1);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.7rem;transition:all 0.3s;color:var(--blue-bright);flex-shrink:0;
+}
+.faq-item.open .faq-chevron{transform:rotate(180deg);background:rgba(37,99,235,0.2);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.35s ease;}
+.faq-item.open .faq-a{max-height:300px;}
+.faq-a-inner{padding:0 20px 18px;color:var(--muted);font-size:0.9rem;line-height:1.7;}
+
+/* ===== ABOUT ===== */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:2rem;margin:3rem 0;
+}
+.stat-item{text-align:center;}
+.stat-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;
+  background:linear-gradient(135deg,var(--blue-bright),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-lbl{color:var(--muted);font-size:0.85rem;margin-top:4px;}
+.value-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;transition:all 0.3s;}
+.value-card:hover{border-color:var(--border-bright);transform:translateY(-3px);}
+.value-icon{font-size:2rem;margin-bottom:0.8rem;}
+.value-title{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem;}
+.value-desc{color:var(--muted);font-size:0.88rem;line-height:1.6;}
+.team-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.8rem;text-align:center;transition:all 0.3s;}
+.team-card:hover{border-color:var(--border-bright);transform:translateY(-3px);}
+.team-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 1rem;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:700;
+  border:2px solid rgba(96,165,250,0.3);}
+.team-name{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:4px;}
+.team-role{color:var(--muted);font-size:0.85rem;}
+.team-social{display:flex;justify-content:center;gap:8px;margin-top:12px;}
+.team-social a{color:var(--muted);text-decoration:none;font-size:0.8rem;
+  transition:color 0.2s;padding:4px 8px;border-radius:6px;border:1px solid var(--border);}
+.team-social a:hover{color:var(--blue-bright);border-color:var(--border-bright);}
+
+/* ===== SUPPORT ===== */
+.contact-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:2rem;text-align:center;transition:all 0.3s;cursor:pointer;
+}
+.contact-card:hover{border-color:var(--border-bright);transform:translateY(-4px);
+  box-shadow:0 20px 50px rgba(37,99,235,0.15);}
+.contact-icon{font-size:2.2rem;margin-bottom:1rem;}
+.contact-title{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem;}
+.contact-detail{color:var(--blue-bright);font-size:0.9rem;}
+.form-group{margin-bottom:1.2rem;}
+.form-label{display:block;font-size:0.85rem;color:var(--muted);margin-bottom:6px;font-weight:500;}
+.form-input{
+  width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:10px;padding:12px 16px;color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;transition:border-color 0.2s;outline:none;
+}
+.form-input:focus{border-color:var(--blue-light);background:rgba(37,99,235,0.05);}
+.form-input.error{border-color:var(--loss);}
+.error-msg{color:var(--loss);font-size:0.78rem;margin-top:5px;display:flex;align-items:center;gap:4px;}
+.form-textarea{resize:vertical;min-height:120px;}
+.success-banner{
+  background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);
+  border-radius:12px;padding:16px 20px;color:var(--gain);text-align:center;
+  font-weight:500;margin-top:1rem;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.hours-block{
+  background:var(--card2);border:1px solid var(--border);border-radius:14px;
+  padding:1.5rem;text-align:center;margin-top:2rem;
+}
+.hours-title{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.5rem;}
+.hours-text{color:var(--muted);font-size:0.9rem;line-height:1.7;}
+
+/* ===== AUTH ===== */
+.auth-wrap{min-height:calc(100vh - 72px);display:flex;align-items:center;justify-content:center;padding:2rem;}
+.auth-card{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:2.5rem;width:100%;max-width:440px;
+  box-shadow:0 40px 100px rgba(0,0,0,0.4);
+}
+.auth-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:2rem;}
+.auth-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:0.4rem;}
+.auth-sub{text-align:center;color:var(--muted);font-size:0.9rem;margin-bottom:2rem;}
+.auth-btn{width:100%;padding:14px;font-size:1rem;border-radius:10px;}
+.auth-link{text-align:center;margin-top:1.2rem;font-size:0.88rem;color:var(--muted);}
+.auth-link a{color:var(--blue-bright);text-decoration:none;font-weight:500;}
+.auth-link a:hover{text-decoration:underline;}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:1.5rem 0;color:var(--muted);font-size:0.82rem;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.social-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:10px;padding:12px;cursor:pointer;font-size:0.88rem;
+  font-family:'DM Sans',sans-serif;color:var(--white);transition:all 0.2s;
+}
+.social-btn:hover{background:rgba(255,255,255,0.08);border-color:var(--border-bright);}
+.pw-wrap{position:relative;}
+.pw-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:0.9rem;
+  transition:color 0.2s;
+}
+.pw-toggle:hover{color:var(--white);}
+.pw-strength{height:4px;border-radius:4px;margin-top:8px;background:rgba(255,255,255,0.08);overflow:hidden;}
+.pw-strength-bar{height:100%;border-radius:4px;transition:width 0.4s,background 0.4s;width:0%;}
+.pw-strength-label{font-size:0.75rem;margin-top:5px;font-weight:500;}
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;margin:1.2rem 0;}
+.checkbox-row input{margin-top:3px;accent-color:var(--blue);flex-shrink:0;}
+.checkbox-row label{font-size:0.85rem;color:var(--muted);line-height:1.5;cursor:pointer;}
+.checkbox-row label a{color:var(--blue-bright);text-decoration:none;}
+.remember-row{display:flex;align-items:center;justify-content:space-between;margin:0.5rem 0 1.2rem;}
+.remember-row label{display:flex;align-items:center;gap:8px;font-size:0.85rem;color:var(--muted);cursor:pointer;}
+.remember-row label input{accent-color:var(--blue);}
+.forgot-link{color:var(--blue-bright);text-decoration:none;font-size:0.85rem;}
+.forgot-link:hover{text-decoration:underline;}
+
+/* ===== MARKETS PAGE ===== */
+.markets-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem;}
+.filter-btn{
+  padding:7px 18px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:0.85rem;cursor:pointer;transition:all 0.2s;font-weight:500;
+}
+.filter-btn.active{background:rgba(37,99,235,0.2);border-color:var(--blue-light);color:var(--white);}
+.filter-btn:hover{border-color:var(--border-bright);color:var(--white);}
+.market-table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+.market-table th{
+  text-align:left;padding:12px 16px;color:var(--muted);font-weight:500;font-size:0.8rem;
+  border-bottom:1px solid var(--border);letter-spacing:0.04em;text-transform:uppercase;
+}
+.market-table th:not(:first-child){text-align:right;}
+.market-table td{padding:14px 16px;border-bottom:1px solid rgba(96,165,250,0.06);vertical-align:middle;}
+.market-table td:not(:first-child){text-align:right;}
+.market-table tr{transition:background 0.2s;cursor:default;}
+.market-table tbody tr:hover{background:rgba(37,99,235,0.05);}
+.market-table tbody tr:last-child td{border-bottom:none;}
+.m-coin-info{display:flex;align-items:center;gap:12px;}
+.m-coin-icon{width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.m-coin-name{font-weight:600;font-family:'Syne',sans-serif;font-size:0.92rem;}
+.m-coin-sym{color:var(--muted);font-size:0.77rem;}
+.m-sparkline{display:inline-flex;align-items:flex-end;gap:2px;height:30px;vertical-align:bottom;}
+.m-spark-bar{width:5px;border-radius:1px 1px 0 0;}
+.m-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:6px;font-weight:600;font-size:0.82rem;
+}
+.m-badge.up{background:rgba(34,197,94,0.12);color:var(--gain);}
+.m-badge.down{background:rgba(239,68,68,0.1);color:var(--loss);}
+.markets-search{
+  display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:10px;padding:10px 16px;max-width:400px;
+}
+.markets-search input{
+  background:transparent;border:none;outline:none;color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;flex:1;
+}
+.markets-search input::placeholder{color:var(--muted);}
+
+/* ===== DASHBOARD PAGE ===== */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1.2rem;margin-bottom:2rem;}
+.dash-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;}
+.dash-stat-label{font-size:0.8rem;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+.dash-stat-val{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:4px;}
+.dash-stat-sub{font-size:0.78rem;display:flex;align-items:center;gap:4px;}
+.dash-main{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;}
+.dash-chart-area{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;}
+.dash-chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.dash-chart-tabs{display:flex;gap:4px;}
+.chart-tab{
+  padding:5px 14px;border-radius:6px;border:1px solid transparent;
+  background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:0.8rem;cursor:pointer;transition:all 0.2s;
+}
+.chart-tab.active{background:rgba(37,99,235,0.2);border-color:var(--blue-light);color:var(--white);}
+.chart-tab:hover:not(.active){color:var(--white);}
+.simple-chart{width:100%;height:180px;position:relative;}
+.simple-chart svg{width:100%;height:100%;}
+.dash-sidebar{display:flex;flex-direction:column;gap:1.2rem;}
+.dash-widget{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;}
+.dash-widget-title{font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:1rem;}
+.portfolio-item{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid rgba(96,165,250,0.06);}
+.portfolio-item:last-child{border-bottom:none;}
+.port-left{display:flex;align-items:center;gap:10px;}
+.port-icon{width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0;}
+.port-name{font-weight:600;font-size:0.85rem;}
+.port-alloc{color:var(--muted);font-size:0.75rem;}
+.port-val{text-align:right;}
+.port-price{font-weight:600;font-size:0.85rem;}
+.port-chg{font-size:0.75rem;font-weight:600;}
+.dash-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:0.5rem;}
+.dash-action-btn{
+  padding:10px;border-radius:10px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:0.85rem;cursor:pointer;
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500;
+}
+.dash-action-btn:hover{background:rgba(37,99,235,0.15);border-color:var(--blue-light);}
+.dash-action-btn.primary{background:linear-gradient(135deg,rgba(37,99,235,0.3),rgba(6,182,212,0.2));
+  border-color:var(--blue-light);}
+.dash-action-btn.primary:hover{background:linear-gradient(135deg,rgba(37,99,235,0.5),rgba(6,182,212,0.35));}
+.recent-tx{display:flex;flex-direction:column;gap:8px;}
+.tx-item{display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid rgba(96,165,250,0.06);}
+.tx-item:last-child{border-bottom:none;}
+.tx-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
+.tx-icon.dep{background:rgba(34,197,94,0.15);}
+.tx-icon.wit{background:rgba(239,68,68,0.12);}
+.tx-icon.buy{background:rgba(37,99,235,0.15);}
+.tx-body{flex:1;}
+.tx-name{font-size:0.83rem;font-weight:600;}
+.tx-date{font-size:0.74rem;color:var(--muted);}
+.tx-amount{text-align:right;}
+.tx-val{font-size:0.85rem;font-weight:600;}
+.tx-status{font-size:0.72rem;color:var(--muted);}
+
+/* ===== 404 PAGE ===== */
+.not-found{
+  min-height:calc(100vh - 72px);display:flex;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;padding:2rem;
+}
+.nf-code{
+  font-family:'Syne',sans-serif;font-size:8rem;font-weight:800;line-height:1;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:1rem;
+}
+.nf-title{font-size:1.8rem;font-weight:700;margin-bottom:0.8rem;}
+.nf-sub{color:var(--muted);margin-bottom:2rem;max-width:400px;}
+
+/* ===== FOOTER ===== */
+footer{
+  background:rgba(6,12,30,0.97);border-top:1px solid var(--border);
+  padding:3.5rem 5% 2rem;position:relative;z-index:1;
+}
+.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;margin-bottom:2.5rem;}
+.footer-brand p{color:var(--muted);font-size:0.85rem;line-height:1.7;margin-top:12px;max-width:260px;}
+.footer-col h4{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:1rem;}
+.footer-col a{display:block;color:var(--muted);text-decoration:none;font-size:0.85rem;
+  margin-bottom:8px;transition:color 0.2s;cursor:pointer;}
+.footer-col a:hover{color:var(--white);}
+.social-icons{display:flex;gap:10px;margin-top:1rem;}
+.social-icon{
+  width:36px;height:36px;border-radius:8px;background:rgba(37,99,235,0.1);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;cursor:pointer;transition:all 0.2s;text-decoration:none;color:var(--muted);
+}
+.social-icon:hover{background:rgba(37,99,235,0.25);color:var(--white);border-color:var(--border-bright);}
+.footer-bottom{
+  border-top:1px solid var(--border);padding-top:1.5rem;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;
+}
+.footer-legal{color:var(--muted);font-size:0.75rem;line-height:1.7;max-width:600px;}
+.footer-copy{color:var(--muted);font-size:0.8rem;flex-shrink:0;}
+.footer-newsletter{display:flex;gap:8px;margin-top:14px;}
+.newsletter-input{
+  flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:8px;padding:9px 14px;color:var(--white);
+  font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;
+  transition:border-color 0.2s;
+}
+.newsletter-input:focus{border-color:var(--blue-light);}
+.newsletter-btn{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border:none;color:#fff;padding:9px 16px;border-radius:8px;
+  cursor:pointer;font-size:0.83rem;font-weight:600;font-family:'DM Sans',sans-serif;
+  white-space:nowrap;transition:all 0.2s;
+}
+.newsletter-btn:hover{opacity:0.9;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1100px){
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .dash-grid{grid-template-columns:repeat(2,1fr);}
+  .dash-main{grid-template-columns:1fr;}
+}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:2rem;}
+  .hero-img{max-width:100%;height:260px;margin:0;}
+}
+@media(max-width:768px){
+  .nav-links,.nav-btns{display:none;}
+  .hamburger{display:flex;}
+  .grid-3{grid-template-columns:1fr 1fr;}
+  .grid-2{grid-template-columns:1fr;}
+  .plans-grid{grid-template-columns:1fr!important;}
+  .hero{padding:3rem 5% 2rem;}
+  .hero h1{font-size:2.2rem;}
+  .section{padding:3rem 5%;}
+  .activity-float{display:none!important;}
+  .footer-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .footer-bottom{flex-direction:column;}
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .dash-main{grid-template-columns:1fr;}
+}
+@media(max-width:520px){
+  .grid-3{grid-template-columns:1fr;}
+  .grid-4{grid-template-columns:1fr;}
+  .hero-ctas{flex-direction:column;}
+  .hero-stats{flex-direction:column;}
+  .chat-panel{right:8px;left:8px;width:auto;}
+  .dash-grid{grid-template-columns:1fr;}
+  .dash-actions{grid-template-columns:1fr;}
+  .nf-code{font-size:5rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="aurora"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-logo" onclick="navigate('home')">
+    <div class="logo-box">📈</div>
+    <span class="nav-brand">QuantVest</span>
+  </div>
+  <div class="nav-links">
+    <a onclick="navigate('home')" id="nav-home" class="active">Home</a>
+    <a onclick="navigate('markets')" id="nav-markets">Markets</a>
+    <a onclick="navigate('about')" id="nav-about">About</a>
+    <a onclick="navigate('plans')" id="nav-plans">Plans</a>
+    <a onclick="navigate('faqs')" id="nav-faqs">FAQs</a>
+    <a onclick="navigate('support')" id="nav-support">Support</a>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-ghost" onclick="navigate('login')">Login</button>
+    <button class="btn-primary" onclick="navigate('signup')">Get Started</button>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMobile()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobile()"></div>
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <div class="nav-logo" onclick="navigate('home');closeMobile()">
+      <div class="logo-box" style="width:34px;height:34px;font-size:1rem;">📈</div>
+      <span class="nav-brand" style="font-size:1.1rem;">QuantVest</span>
+    </div>
+    <button class="close-menu" onclick="closeMobile()">✕</button>
+  </div>
+  <div class="mobile-menu-body">
+    <a onclick="navigate('home');closeMobile()">🏠 Home</a>
+    <a onclick="navigate('markets');closeMobile()">📊 Markets</a>
+    <a onclick="navigate('about');closeMobile()">ℹ️ About</a>
+    <a onclick="navigate('plans');closeMobile()">💎 Plans</a>
+    <a onclick="navigate('faqs');closeMobile()">❓ FAQs</a>
+    <a onclick="navigate('support');closeMobile()">📞 Support</a>
+  </div>
+  <div class="mobile-menu-footer">
+    <button class="btn-ghost" style="width:100%;" onclick="navigate('login');closeMobile()">Login</button>
+    <button class="btn-primary" style="width:100%;" onclick="navigate('signup');closeMobile()">Get Started Free</button>
+  </div>
+</div>
+
+<!-- ==================== HOME PAGE ==================== -->
+<div class="page active" id="page-home">
+  <section>
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-badge"><span class="hero-badge-dot"></span>Trusted by 2.4M+ investors worldwide</div>
+        <h1>Invest Without <span>Limits.</span></h1>
+        <p class="hero-sub">Trade crypto, stocks, and ETFs with zero commission. Real-time data. Real results. Your wealth, your rules.</p>
+        <div class="hero-ctas">
+          <button class="btn-primary btn-xl" onclick="navigate('signup')">Get Started Free</button>
+          <button class="btn-ghost-xl" onclick="navigate('plans')">View Plans</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-badge"><div class="val">2.4M+</div><div class="lbl">Active Investors</div></div>
+          <div class="stat-badge"><div class="val">$6.1B</div><div class="lbl">Total Traded</div></div>
+          <div class="stat-badge"><div class="val">150+</div><div class="lbl">Countries</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="hero-img">
+          <div class="hero-img-grid"></div>
+          <div class="hero-img-inner">
+            <div class="hero-img-icon">📊</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:6px;position:relative;z-index:1;">Hero Image</div>
+            <div class="hero-img-label" style="position:relative;z-index:1;">Upload Later — 520×380px</div>
+            <div style="color:var(--muted);font-size:0.75rem;margin-top:6px;position:relative;z-index:1;">Recommended: Person with laptop/phone</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <div class="ticker-track-inner" id="tickerInner"><!-- JS --></div>
+    </div>
+  </div>
+
+  <!-- LIVE CRYPTO -->
+  <div class="section" style="padding-bottom:2rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+      <div>
+        <div class="section-tag">Live Markets</div>
+        <h2 class="section-title" style="margin-bottom:0;">Crypto Markets</h2>
+      </div>
+      <button class="btn-ghost" onclick="navigate('markets')" style="display:flex;align-items:center;gap:6px;">View All Markets →</button>
+    </div>
+    <p class="section-sub">Real-time prices via CoinGecko API. Auto-refreshes every 30 seconds.</p>
+    <div class="grid-3" id="cryptoGrid"><!-- JS --></div>
+  </div>
+
+  <!-- STOCKS -->
+  <div class="section" style="padding-top:1rem;padding-bottom:2rem;">
+    <div class="section-tag">Popular Stocks</div>
+    <h2 class="section-title">Stock Watchlist</h2>
+    <p class="section-sub">Illustrative data for display purposes. Prices delayed 15 minutes.</p>
+    <div class="grid-4" id="stocksGrid"></div>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section" style="padding-top:1rem;padding-bottom:2rem;">
+    <div class="section-tag">Why QuantVest</div>
+    <h2 class="section-title">Everything You Need to Trade Smart</h2>
+    <div class="grid-3">
+      <div class="card"><div class="feat-icon">🚀</div><div class="feat-title">Zero Commission</div><div class="feat-desc">Trade crypto, stocks, and ETFs without paying a single cent in commission. More profit stays in your pocket.</div></div>
+      <div class="card"><div class="feat-icon">🔒</div><div class="feat-title">Bank-Level Security</div><div class="feat-desc">256-bit AES encryption, 2FA, and cold storage for digital assets. Your funds are protected 24/7.</div></div>
+      <div class="card"><div class="feat-icon">📈</div><div class="feat-title">Real-Time Analytics</div><div class="feat-desc">Live charts, advanced indicators, and portfolio analytics give you the edge to make smarter decisions.</div></div>
+      <div class="card"><div class="feat-icon">🌍</div><div class="feat-title">Global Markets</div><div class="feat-desc">Access 500+ assets across crypto, US stocks, ETFs and Forex — all in one platform, no switching needed.</div></div>
+      <div class="card"><div class="feat-icon">⚡</div><div class="feat-title">Instant Execution</div><div class="feat-desc">Lightning-fast trade execution with sub-millisecond latency. Never miss a market opportunity again.</div></div>
+      <div class="card"><div class="feat-icon">💬</div><div class="feat-title">24/7 Support</div><div class="feat-desc">Our expert support team is available around the clock via live chat, email, and WhatsApp.</div></div>
+    </div>
+  </div>
+
+  <!-- TRUST STRIP -->
+  <div class="section" style="padding-top:0;padding-bottom:2rem;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem 3rem;">
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <span style="color:var(--muted);font-size:0.85rem;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;">Trusted & Regulated</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:3rem;flex-wrap:wrap;">
+        <div style="text-align:center;"><div style="font-size:1.5rem;margin-bottom:4px;">🔐</div><div style="font-size:0.78rem;color:var(--muted);">SSL Secured</div></div>
+        <div style="text-align:center;"><div style="font-size:1.5rem;margin-bottom:4px;">🏛️</div><div style="font-size:0.78rem;color:var(--muted);">SEC Registered</div></div>
+        <div style="text-align:center;"><div style="font-size:1.5rem;margin-bottom:4px;">🛡️</div><div style="font-size:0.78rem;color:var(--muted);">FDIC Insured</div></div>
+        <div style="text-align:center;"><div style="font-size:1.5rem;margin-bottom:4px;">✅</div><div style="font-size:0.78rem;color:var(--muted);">KYC Compliant</div></div>
+        <div style="text-align:center;"><div style="font-size:1.5rem;margin-bottom:4px;">⭐</div><div style="font-size:0.78rem;color:var(--muted);">4.9/5 Rating</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="section" style="padding-top:1rem;">
+    <div class="section-tag">Testimonials</div>
+    <h2 class="section-title">What Our Investors Say</h2>
+    <div class="grid-3">
+      <div class="card"><div class="test-stars">★★★★★</div><p class="test-quote">"QuantVest changed how I invest. The interface is clean, the returns are real, and my portfolio has grown 34% in just 8 months."</p><div class="test-author"><div class="test-avatar">SM</div><div><div class="test-name">Sarah Mitchell</div><div class="test-role">Freelance Designer, Austin TX</div></div></div></div>
+      <div class="card"><div class="test-stars">★★★★★</div><p class="test-quote">"I was skeptical at first, but the Growth plan delivered. My monthly returns have been consistently above 3.5%. Highly recommend!"</p><div class="test-author"><div class="test-avatar">JO</div><div><div class="test-name">James Okafor</div><div class="test-role">Software Engineer, Lagos</div></div></div></div>
+      <div class="card"><div class="test-stars">★★★★★</div><p class="test-quote">"The customer support is exceptional. Any question I had was answered within minutes. The platform itself is incredibly intuitive."</p><div class="test-author"><div class="test-avatar">EC</div><div><div class="test-name">Emma Clarke</div><div class="test-role">Marketing Manager, London</div></div></div></div>
+    </div>
+  </div>
+
+  <!-- CTA BANNER -->
+  <div class="section" style="padding-top:2rem;">
+    <div style="background:linear-gradient(135deg,rgba(37,99,235,0.2),rgba(6,182,212,0.1));
+      border:1px solid var(--border-bright);border-radius:24px;padding:4rem 3rem;text-align:center;">
+      <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;margin-bottom:1rem;">
+        Ready to Start Investing?
+      </h2>
+      <p style="color:var(--muted);margin-bottom:2rem;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.7;">
+        Join 2.4 million investors who trust QuantVest with their financial future. Get started in minutes.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-primary btn-xl" onclick="navigate('signup')">Create Free Account</button>
+        <button class="btn-ghost-xl" onclick="navigate('plans')">Compare Plans</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MARKETS PAGE ==================== -->
+<div class="page" id="page-markets">
+  <div class="section">
+    <div class="section-tag">Live Data</div>
+    <h1 class="section-title">Markets Overview</h1>
+    <p class="section-sub">Real-time prices across crypto, stocks, ETFs and Forex. Data refreshes automatically.</p>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+      <div class="markets-filter" id="marketsFilter">
+        <button class="filter-btn active" onclick="filterMarkets('all',this)">All</button>
+        <button class="filter-btn" onclick="filterMarkets('crypto',this)">Crypto</button>
+        <button class="filter-btn" onclick="filterMarkets('stocks',this)">Stocks</button>
+        <button class="filter-btn" onclick="filterMarkets('etf',this)">ETFs</button>
+        <button class="filter-btn" onclick="filterMarkets('forex',this)">Forex</button>
+      </div>
+      <div class="markets-search">
+        <span style="color:var(--muted);">🔍</span>
+        <input type="text" placeholder="Search assets..." id="marketsSearch" oninput="filterMarketsSearch(this.value)"/>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="overflow-x:auto;">
+        <table class="market-table" id="marketsTable">
+          <thead>
+            <tr>
+              <th style="padding-left:20px;">#</th>
+              <th>Asset</th>
+              <th>Price</th>
+              <th>24h Change</th>
+              <th>Market Cap</th>
+              <th>Volume (24h)</th>
+              <th>7d Chart</th>
+            </tr>
+          </thead>
+          <tbody id="marketsBody"><!-- JS --></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.5rem;flex-wrap:wrap;gap:1rem;">
+      <div style="font-size:0.82rem;color:var(--muted);">Showing <span id="marketsCount">20</span> assets · <span style="color:var(--gain);">● Live</span> — refreshes every 60s</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost" style="padding:7px 16px;font-size:0.82rem;" disabled>← Prev</button>
+        <button class="btn-ghost" style="padding:7px 16px;font-size:0.82rem;">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ABOUT PAGE ==================== -->
+<div class="page" id="page-about">
+  <div class="section">
+    <div style="max-width:720px;margin:0 auto;text-align:center;padding:3rem 0 2rem;">
+      <div class="section-tag">About QuantVest</div>
+      <h1 class="section-title">Built for the Modern Investor</h1>
+      <p style="color:var(--muted);line-height:1.8;font-size:1.05rem;">QuantVest was founded in 2021 with a single mission: democratize access to global financial markets. We believe every person — regardless of background or net worth — deserves access to the same powerful tools used by professional traders.</p>
+    </div>
+
+    <div class="grid-2" style="max-width:900px;margin:0 auto 3rem;">
+      <div class="card"><div class="feat-icon">🎯</div><div class="feat-title">Our Mission</div><p class="feat-desc">To empower every individual to grow their wealth through transparent, commission-free access to global financial markets. We remove barriers so you can focus on building your future.</p></div>
+      <div class="card"><div class="feat-icon">🔭</div><div class="feat-title">Our Vision</div><p class="feat-desc">A world where geography, wealth, and background are no longer obstacles to financial growth. QuantVest powers the next generation of global investors.</p></div>
+    </div>
+
+    <div class="stats-row" style="max-width:900px;margin:0 auto 4rem;">
+      <div class="stat-item"><div class="stat-val">2.4M</div><div class="stat-lbl">Active Users</div></div>
+      <div class="stat-item"><div class="stat-val">$6B+</div><div class="stat-lbl">Volume Traded</div></div>
+      <div class="stat-item"><div class="stat-val">2021</div><div class="stat-lbl">Year Founded</div></div>
+      <div class="stat-item"><div class="stat-val">150</div><div class="stat-lbl">Countries Served</div></div>
+    </div>
+
+    <div style="max-width:900px;margin:0 auto 4rem;">
+      <div class="section-tag">Leadership</div>
+      <h2 class="section-title" style="margin-bottom:2rem;">Meet the Team</h2>
+      <div class="grid-3">
+        <div class="team-card">
+          <div class="team-avatar">AK</div>
+          <div class="team-name">Alex Kwan</div>
+          <div class="team-role">Chief Executive Officer</div>
+          <div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">PR</div>
+          <div class="team-name">Priya Reddy</div>
+          <div class="team-role">Chief Technology Officer</div>
+          <div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">ML</div>
+          <div class="team-name">Marcus Lee</div>
+          <div class="team-role">Head of Product</div>
+          <div class="team-social"><a href="#">𝕏</a><a href="#">in</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:900px;margin:0 auto 4rem;">
+      <div class="section-tag">Our Story</div>
+      <h2 class="section-title" style="margin-bottom:1.5rem;">How It Started</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:relative;padding-left:2rem;">
+          <div style="position:absolute;left:-1px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--blue),var(--cyan));border-radius:2px;"></div>
+          <div style="font-size:0.78rem;color:var(--cyan);font-weight:600;margin-bottom:6px;letter-spacing:0.06em;">2021 — FOUNDED</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;">The Beginning</div>
+          <p style="color:var(--muted);font-size:0.87rem;line-height:1.6;">Three engineers frustrated by high brokerage fees quit their jobs and built QuantVest from a garage in San Francisco.</p>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:relative;padding-left:2rem;">
+          <div style="position:absolute;left:-1px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--blue),var(--cyan));border-radius:2px;"></div>
+          <div style="font-size:0.78rem;color:var(--cyan);font-weight:600;margin-bottom:6px;letter-spacing:0.06em;">2022 — GROWTH</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;">Series A</div>
+          <p style="color:var(--muted);font-size:0.87rem;line-height:1.6;">Raised $28M Series A, launched crypto trading, and grew to 200,000 users across 40 countries in under 12 months.</p>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:relative;padding-left:2rem;">
+          <div style="position:absolute;left:-1px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--blue),var(--cyan));border-radius:2px;"></div>
+          <div style="font-size:0.78rem;color:var(--cyan);font-weight:600;margin-bottom:6px;letter-spacing:0.06em;">2023 — SCALE</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;">Global Expansion</div>
+          <p style="color:var(--muted);font-size:0.87rem;line-height:1.6;">Expanded to 150 countries, launched stocks & ETF trading, hit $1B in total volume traded milestone.</p>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:relative;padding-left:2rem;">
+          <div style="position:absolute;left:-1px;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--blue),var(--cyan));border-radius:2px;"></div>
+          <div style="font-size:0.78rem;color:var(--cyan);font-weight:600;margin-bottom:6px;letter-spacing:0.06em;">2024–NOW</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:6px;">AI & Beyond</div>
+          <p style="color:var(--muted);font-size:0.87rem;line-height:1.6;">Launched AI-powered signals and copy trading. Now serving 2.4M investors with $6B+ in annual trading volume.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:900px;margin:0 auto;">
+      <div class="section-tag">Core Values</div>
+      <h2 class="section-title" style="margin-bottom:2rem;">What We Stand For</h2>
+      <div class="grid-2">
+        <div class="value-card"><div class="value-icon">🔍</div><div class="value-title">Transparency</div><p class="value-desc">No hidden fees, no surprises. We believe every investor deserves complete clarity about costs, returns, and risks.</p></div>
+        <div class="value-card"><div class="value-icon">🛡️</div><div class="value-title">Security</div><p class="value-desc">Your assets are protected by bank-grade encryption, multi-factor authentication, and institutional-grade cold storage.</p></div>
+        <div class="value-card"><div class="value-icon">💡</div><div class="value-title">Innovation</div><p class="value-desc">We continuously push the boundaries of what's possible, delivering new features and tools before anyone else.</p></div>
+        <div class="value-card"><div class="value-icon">🌐</div><div class="value-title">Accessibility</div><p class="value-desc">Investing should be for everyone. We've designed QuantVest to be intuitive whether you're a beginner or a pro.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PLANS PAGE ==================== -->
+<div class="page" id="page-plans">
+  <div class="section" style="text-align:center;">
+    <div class="section-tag">Pricing</div>
+    <h1 class="section-title">Simple, Transparent Pricing</h1>
+    <p class="section-sub" style="margin:0 auto 2rem;">Start with any plan. Upgrade or downgrade anytime. No lock-in. No hidden fees.</p>
+
+    <div class="plans-toggle">
+      <button class="toggle-btn active" id="toggleMonthly" onclick="setPlansToggle('monthly')">Monthly</button>
+      <button class="toggle-btn" id="toggleAnnual" onclick="setPlansToggle('annual')">Annual<span class="off-badge">SAVE 20%</span></button>
+    </div>
+
+    <div class="grid-3 plans-grid" style="max-width:1100px;margin:0 auto;align-items:start;">
+      <div class="plan-card">
+        <div class="plan-name">STARTER</div>
+        <div class="plan-price" id="price-starter">$99<span>/mo</span></div>
+        <div class="plan-desc">Perfect for beginners ready to start their investment journey.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Up to $5,000 portfolio</li>
+          <li><span class="check">✓</span> Basic analytics dashboard</li>
+          <li><span class="check">✓</span> Email support (48h response)</li>
+          <li><span class="check">✓</span> 2% monthly return target</li>
+          <li><span class="check">✓</span> Crypto markets access</li>
+          <li><span class="check">✓</span> Paper trading demo account</li>
+          <li class="faded"><span class="check">✗</span> Stocks & ETF access</li>
+          <li class="faded"><span class="check">✗</span> Priority support</li>
+        </ul>
+        <button class="btn-ghost" style="width:100%;padding:12px;" onclick="navigate('signup')">Get Started</button>
+      </div>
+
+      <div class="plan-card popular">
+        <div class="popular-badge">✦ Most Popular</div>
+        <div class="plan-name">GROWTH</div>
+        <div class="plan-price" id="price-growth">$299<span>/mo</span></div>
+        <div class="plan-desc">For serious investors looking to scale their portfolio significantly.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Up to $50,000 portfolio</li>
+          <li><span class="check">✓</span> Advanced analytics suite</li>
+          <li><span class="check">✓</span> Priority support (2h response)</li>
+          <li><span class="check">✓</span> 4% monthly return target</li>
+          <li><span class="check">✓</span> Crypto + Stocks + ETFs</li>
+          <li><span class="check">✓</span> Dedicated account manager</li>
+          <li><span class="check">✓</span> AI-powered trade signals</li>
+          <li class="faded"><span class="check">✗</span> Personal advisor</li>
+        </ul>
+        <button class="btn-primary" style="width:100%;padding:12px;" onclick="navigate('signup')">Get Started</button>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-name">ELITE</div>
+        <div class="plan-price" id="price-elite">$799<span>/mo</span></div>
+        <div class="plan-desc">For professionals and institutions who demand absolute best.</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li><span class="check">✓</span> Unlimited portfolio size</li>
+          <li><span class="check">✓</span> Full analytics + AI signals</li>
+          <li><span class="check">✓</span> 24/7 VIP support (live)</li>
+          <li><span class="check">✓</span> 7% monthly return target</li>
+          <li><span class="check">✓</span> All markets — full access</li>
+          <li><span class="check">✓</span> Personal investment advisor</li>
+          <li><span class="check">✓</span> Same-day withdrawals</li>
+          <li><span class="check">✓</span> Early feature access</li>
+        </ul>
+        <button class="btn-ghost" style="width:100%;padding:12px;" onclick="navigate('signup')">Get Started</button>
+      </div>
+    </div>
+
+    <p style="color:var(--muted);font-size:0.8rem;margin-top:2.5rem;line-height:1.6;">
+      ⚠️ <strong>Risk Disclaimer:</strong> Returns are projections only. Investing involves risk. Past performance does not guarantee future results.
+    </p>
+
+    <!-- COMPARE TABLE -->
+    <div style="max-width:900px;margin:4rem auto 0;">
+      <h2 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:2rem;font-size:1.6rem;">Full Feature Comparison</h2>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:16px 20px;color:var(--muted);font-weight:500;">Feature</th>
+              <th style="padding:16px;color:var(--muted);font-weight:500;">Starter</th>
+              <th style="padding:16px;color:var(--blue-bright);font-weight:600;background:rgba(37,99,235,0.06);">Growth</th>
+              <th style="padding:16px;color:var(--muted);font-weight:500;">Elite</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
+              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Portfolio Limit</td>
+              <td style="text-align:center;padding:14px;">$5,000</td>
+              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);">$50,000</td>
+              <td style="text-align:center;padding:14px;">Unlimited</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
+              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Return Target (Monthly)</td>
+              <td style="text-align:center;padding:14px;">2%</td>
+              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);">4%</td>
+              <td style="text-align:center;padding:14px;">7%</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
+              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Crypto Trading</td>
+              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
+              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td>
+              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
+              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Stocks & ETFs</td>
+              <td style="text-align:center;padding:14px;color:var(--loss);">✗</td>
+              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td>
+              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(96,165,250,0.06);">
+              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">AI Trade Signals</td>
+              <td style="text-align:center;padding:14px;color:var(--loss);">✗</td>
+              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--gain);">✓</td>
+              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
+            </tr>
+            <tr>
+              <td style="padding:14px 20px;color:var(--muted);font-size:0.85rem;">Personal Advisor</td>
+              <td style="text-align:center;padding:14px;color:var(--loss);">✗</td>
+              <td style="text-align:center;padding:14px;background:rgba(37,99,235,0.04);color:var(--loss);">✗</td>
+              <td style="text-align:center;padding:14px;color:var(--gain);">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FAQS PAGE ==================== -->
+<div class="page" id="page-faqs">
+  <div class="section" style="max-width:800px;">
+    <div class="section-tag">Support</div>
+    <h1 class="section-title">Frequently Asked Questions</h1>
+    <p class="section-sub">Can't find what you're looking for? <a onclick="navigate('support')" style="color:var(--blue-bright);cursor:pointer;">Contact our support team.</a></p>
+
+    <!-- FAQ CATEGORIES -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem;">
+      <button class="filter-btn active" onclick="filterFAQs('all',this)">All</button>
+      <button class="filter-btn" onclick="filterFAQs('account',this)">Account</button>
+      <button class="filter-btn" onclick="filterFAQs('payments',this)">Payments</button>
+      <button class="filter-btn" onclick="filterFAQs('trading',this)">Trading</button>
+      <button class="filter-btn" onclick="filterFAQs('security',this)">Security</button>
+    </div>
+
+    <div id="faqList"></div>
+  </div>
+</div>
+
+<!-- ==================== SUPPORT PAGE ==================== -->
+<div class="page" id="page-support">
+  <div class="section">
+    <div style="max-width:700px;margin:0 auto;text-align:center;padding-bottom:2rem;">
+      <div class="section-tag">Get Help</div>
+      <h1 class="section-title">We're Here to Help. Always.</h1>
+      <p style="color:var(--muted);line-height:1.7;">Our support team is available around the clock. Choose the channel that works best for you.</p>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:3rem;">
+      <div class="contact-card" onclick="openChat()">
+        <div class="contact-icon">💬</div>
+        <div class="contact-title">Live Chat</div>
+        <div class="contact-detail">AI Assistant — 24/7</div>
+        <p style="color:var(--muted);font-size:0.82rem;margin-top:8px;">Get instant answers to common questions. Human handoff available.</p>
+        <button class="btn-primary" style="margin-top:1rem;padding:9px 20px;font-size:0.85rem;" onclick="openChat();event.stopPropagation()">Open Chat</button>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📧</div>
+        <div class="contact-title">Email Support</div>
+        <div class="contact-detail">support@quantvest.io</div>
+        <p style="color:var(--muted);font-size:0.82rem;margin-top:8px;">Detailed assistance from our expert team. Response within 2 hours.</p>
+        <a href="mailto:support@quantvest.io" style="display:inline-block;margin-top:1rem;">
+          <button class="btn-ghost" style="padding:9px 20px;font-size:0.85rem;">Send Email</button>
+        </a>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📱</div>
+        <div class="contact-title">WhatsApp</div>
+        <div class="contact-detail">+1 800 000 0000</div>
+        <p style="color:var(--muted);font-size:0.82rem;margin-top:8px;">Chat on WhatsApp. Mon–Fri: 8AM–10PM EST. Sat–Sun: 10AM–6PM.</p>
+        <button class="btn-ghost" style="padding:9px 20px;font-size:0.85rem;margin-top:1rem;">Open WhatsApp</button>
+      </div>
+    </div>
+
+    <div class="grid-2" style="gap:3rem;">
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.5rem;font-size:1.4rem;">Send Us a Message</h2>
+        <form id="supportForm" onsubmit="submitSupportForm(event)">
+          <div class="grid-2" style="gap:1rem;">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input class="form-input" id="sf-name" placeholder="John Doe" type="text" oninput="clearFieldErr('sf-name','sf-name-err')"/>
+              <div class="error-msg" id="sf-name-err"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input class="form-input" id="sf-email" placeholder="john@email.com" type="email" oninput="clearFieldErr('sf-email','sf-email-err')"/>
+              <div class="error-msg" id="sf-email-err"></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject *</label>
+            <select class="form-input" id="sf-subject" onchange="clearFieldErr('sf-subject','sf-subject-err')">
+              <option value="">Select a subject...</option>
+              <option>General Inquiry</option><option>Withdrawal Issue</option>
+              <option>Deposit Issue</option><option>Account Issue</option>
+              <option>Technical Problem</option><option>Plans & Billing</option>
+              <option>Security Concern</option>
+            </select>
+            <div class="error-msg" id="sf-subject-err"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message *</label>
+            <textarea class="form-input form-textarea" id="sf-msg" placeholder="Describe your issue or question in detail..." oninput="clearFieldErr('sf-msg','sf-msg-err')"></textarea>
+            <div class="error-msg" id="sf-msg-err"></div>
+          </div>
+          <button type="submit" class="btn-primary" style="padding:13px 32px;">Send Message ✈️</button>
+          <div id="sf-success" style="display:none;" class="success-banner">✅ Message sent! We'll respond within 2 hours.</div>
+        </form>
+      </div>
+      <div>
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:1.5rem;font-size:1.4rem;">Quick Resources</h2>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;">
+          <a onclick="navigate('faqs')" style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-decoration:none;color:var(--white);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--border-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+            <span style="font-size:1.3rem;">❓</span>
+            <div><div style="font-weight:600;font-size:0.9rem;">Browse FAQs</div><div style="color:var(--muted);font-size:0.8rem;">10 common questions answered</div></div>
+            <span style="margin-left:auto;color:var(--muted);">→</span>
+          </a>
+          <a style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-decoration:none;color:var(--white);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--border-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+            <span style="font-size:1.3rem;">📖</span>
+            <div><div style="font-weight:600;font-size:0.9rem;">Help Center</div><div style="color:var(--muted);font-size:0.8rem;">Guides & tutorials</div></div>
+            <span style="margin-left:auto;color:var(--muted);">→</span>
+          </a>
+          <a style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-decoration:none;color:var(--white);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--border-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+            <span style="font-size:1.3rem;">📊</span>
+            <div><div style="font-weight:600;font-size:0.9rem;">System Status</div><div style="color:var(--muted);font-size:0.8rem;"><span style="color:var(--gain);">● All systems operational</span></div></div>
+            <span style="margin-left:auto;color:var(--muted);">→</span>
+          </a>
+        </div>
+        <div class="hours-block">
+          <div class="hours-title">🕐 Business Hours</div>
+          <div class="hours-text">
+            Monday–Friday: 8AM–10PM EST<br>
+            Saturday–Sunday: 10AM–6PM EST<br>
+            <span style="color:var(--blue-bright);font-size:0.82rem;">AI Chat available 24/7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-box">📈</div>
+        <span class="nav-brand">QuantVest</span>
+      </div>
+      <h2 class="auth-title">Welcome Back</h2>
+      <p class="auth-sub">Sign in to your account to continue investing</p>
+      <form onsubmit="submitLogin(event)" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="l-email">Email Address</label>
+          <input class="form-input" id="l-email" type="email" placeholder="you@example.com" autocomplete="email" oninput="clearFieldErr('l-email','l-email-err')"/>
+          <div class="error-msg" id="l-email-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="l-pw">Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" id="l-pw" type="password" placeholder="Enter your password" autocomplete="current-password" oninput="clearFieldErr('l-pw','l-pw-err')" style="padding-right:44px;"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('l-pw',this)" aria-label="Toggle password">👁</button>
+          </div>
+          <div class="error-msg" id="l-pw-err"></div>
+        </div>
+        <div class="remember-row">
+          <label><input type="checkbox"/> Remember me</label>
+          <a href="#" class="forgot-link" onclick="navigate('forgot');return false;">Forgot Password?</a>
+        </div>
+        <button type="submit" class="btn-primary auth-btn">Sign In</button>
+      </form>
+      <div class="auth-divider">or continue with</div>
+      <div style="display:flex;gap:10px;">
+        <button class="social-btn" onclick="showToast('info','Coming Soon','Google login is coming soon!')">🅶 Google</button>
+        <button class="social-btn" onclick="showToast('info','Coming Soon','Apple login is coming soon!')">🍎 Apple</button>
+      </div>
+      <div class="auth-link">Don't have an account? <a onclick="navigate('signup')">Sign Up Free</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SIGNUP PAGE ==================== -->
+<div class="page" id="page-signup">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-box">📈</div>
+        <span class="nav-brand">QuantVest</span>
+      </div>
+      <h2 class="auth-title">Create Account</h2>
+      <p class="auth-sub">Join 2.4 million investors worldwide — it's free</p>
+      <form onsubmit="submitSignup(event)" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="su-name">Full Name</label>
+          <input class="form-input" id="su-name" type="text" placeholder="John Doe" autocomplete="name" oninput="clearFieldErr('su-name','su-name-err')"/>
+          <div class="error-msg" id="su-name-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="su-email">Email Address</label>
+          <input class="form-input" id="su-email" type="email" placeholder="you@example.com" autocomplete="email" oninput="clearFieldErr('su-email','su-email-err')"/>
+          <div class="error-msg" id="su-email-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="su-phone">Phone Number</label>
+          <input class="form-input" id="su-phone" type="tel" placeholder="+1 234 567 8900" autocomplete="tel" oninput="clearFieldErr('su-phone','su-phone-err')"/>
+          <div class="error-msg" id="su-phone-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="su-pw">Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" id="su-pw" type="password" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value);clearFieldErr('su-pw','su-pw-err')" autocomplete="new-password" style="padding-right:44px;"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('su-pw',this)" aria-label="Toggle password">👁</button>
+          </div>
+          <div class="pw-strength"><div class="pw-strength-bar" id="pwBar"></div></div>
+          <div class="pw-strength-label" id="pwLabel"></div>
+          <div class="error-msg" id="su-pw-err"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="su-cpw">Confirm Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" id="su-cpw" type="password" placeholder="Repeat your password" autocomplete="new-password" oninput="clearFieldErr('su-cpw','su-cpw-err')" style="padding-right:44px;"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('su-cpw',this)" aria-label="Toggle confirm password">👁</button>
+          </div>
+          <div class="error-msg" id="su-cpw-err"></div>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="su-terms"/>
+          <label for="su-terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        <div class="error-msg" id="su-terms-err"></div>
+        <button type="submit" class="btn-primary auth-btn" style="margin-top:0.8rem;">Create Account →</button>
+      </form>
+      <div class="auth-divider">or continue with</div>
+      <div style="display:flex;gap:10px;">
+        <button class="social-btn" onclick="showToast('info','Coming Soon','Google signup is coming soon!')">🅶 Google</button>
+        <button class="social-btn" onclick="showToast('info','Coming Soon','Apple signup is coming soon!')">🍎 Apple</button>
+      </div>
+      <div class="auth-link">Already have an account? <a onclick="navigate('login')">Log In</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FORGOT PASSWORD PAGE ==================== -->
+<div class="page" id="page-forgot">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="logo-box">📈</div>
+        <span class="nav-brand">QuantVest</span>
+      </div>
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🔑</div>
+        <h2 class="auth-title">Reset Password</h2>
+        <p class="auth-sub">Enter your email and we'll send you a reset link within minutes.</p>
+      </div>
+      <form onsubmit="submitForgot(event)" novalidate>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="fp-email" type="email" placeholder="you@example.com" oninput="clearFieldErr('fp-email','fp-email-err')"/>
+          <div class="error-msg" id="fp-email-err"></div>
+        </div>
+        <button type="submit" class="btn-primary auth-btn">Send Reset Link</button>
+        <div id="fp-success" style="display:none;" class="success-banner">📧 Reset link sent! Check your inbox.</div>
+      </form>
+      <div class="auth-link" style="margin-top:1.5rem;">Remember your password? <a onclick="navigate('login')">Back to Login</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DASHBOARD PAGE ==================== -->
+<div class="page" id="page-dashboard">
+  <div class="section" style="padding-top:4rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div style="color:var(--muted);font-size:0.85rem;margin-bottom:4px;">Welcome back 👋</div>
+        <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;">My Portfolio</h1>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-ghost" onclick="showToast('info','Coming Soon','Deposit flow coming soon!')">💰 Deposit</button>
+        <button class="btn-primary" onclick="showToast('info','Coming Soon','Withdraw flow coming soon!')">💸 Withdraw</button>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-stat">
+        <div class="dash-stat-label">Total Portfolio Value <span style="font-size:1rem;">📈</span></div>
+        <div class="dash-stat-val" style="background:linear-gradient(135deg,#60A5FA,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">$24,820</div>
+        <div class="dash-stat-sub" style="color:var(--gain);">▲ +$1,240 this month</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Total Returns <span style="font-size:1rem;">💹</span></div>
+        <div class="dash-stat-val" style="color:var(--gain);">+$3,820</div>
+        <div class="dash-stat-sub" style="color:var(--gain);">▲ +18.2% all time</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Active Plan <span style="font-size:1rem;">💎</span></div>
+        <div class="dash-stat-val" style="font-size:1.3rem;">Growth</div>
+        <div class="dash-stat-sub" style="color:var(--muted);">Renews in 14 days</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-label">Available Cash <span style="font-size:1rem;">💵</span></div>
+        <div class="dash-stat-val">$2,150</div>
+        <div class="dash-stat-sub" style="color:var(--muted);">Ready to invest</div>
+      </div>
+    </div>
+
+    <div class="dash-main">
+      <div class="dash-chart-area">
+        <div class="dash-chart-header">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;">Portfolio Performance</div>
+            <div style="font-size:0.8rem;color:var(--muted);margin-top:2px;">Last 6 months</div>
+          </div>
+          <div class="dash-chart-tabs">
+            <button class="chart-tab active">1W</button>
+            <button class="chart-tab">1M</button>
+            <button class="chart-tab">6M</button>
+            <button class="chart-tab">1Y</button>
+          </div>
+        </div>
+        <div class="simple-chart" id="dashChart"></div>
+        <div style="display:flex;gap:1.5rem;margin-top:1rem;flex-wrap:wrap;">
+          <div><div style="font-size:0.75rem;color:var(--muted);">Starting Value</div><div style="font-weight:600;font-family:'Syne',sans-serif;">$21,000</div></div>
+          <div><div style="font-size:0.75rem;color:var(--muted);">Current Value</div><div style="font-weight:600;font-family:'Syne',sans-serif;color:var(--gain);">$24,820</div></div>
+          <div><div style="font-size:0.75rem;color:var(--muted);">Total Gain</div><div style="font-weight:600;font-family:'Syne',sans-serif;color:var(--gain);">+$3,820 (+18.2%)</div></div>
+        </div>
+      </div>
+
+      <div class="dash-sidebar">
+        <div class="dash-widget">
+          <div class="dash-widget-title">Quick Actions</div>
+          <div class="dash-actions">
+            <button class="dash-action-btn primary" onclick="showToast('info','Trade','Trading terminal coming soon!')">📊 Trade</button>
+            <button class="dash-action-btn" onclick="showToast('info','Transfer','Transfer feature coming soon!')">↔️ Transfer</button>
+            <button class="dash-action-btn" onclick="showToast('info','Deposit','Deposit flow coming soon!')">💰 Deposit</button>
+            <button class="dash-action-btn" onclick="showToast('info','Withdraw','Withdrawal flow coming soon!')">💸 Withdraw</button>
+          </div>
+        </div>
+
+        <div class="dash-widget">
+          <div class="dash-widget-title">Holdings</div>
+          <div class="portfolio-item">
+            <div class="port-left"><div class="port-icon">₿</div><div><div class="port-name">Bitcoin</div><div class="port-alloc">0.142 BTC · 38%</div></div></div>
+            <div class="port-val"><div class="port-price">$9,578</div><div class="port-chg" style="color:var(--gain);">▲ +4.2%</div></div>
+          </div>
+          <div class="portfolio-item">
+            <div class="port-left"><div class="port-icon">Ξ</div><div><div class="port-name">Ethereum</div><div class="port-alloc">1.82 ETH · 28%</div></div></div>
+            <div class="port-val"><div class="port-price">$6,952</div><div class="port-chg" style="color:var(--loss);">▼ -1.1%</div></div>
+          </div>
+          <div class="portfolio-item">
+            <div class="port-left"><div class="port-icon" style="font-size:0.7rem;font-weight:700;">NVDA</div><div><div class="port-name">NVIDIA</div><div class="port-alloc">8 shares · 22%</div></div></div>
+            <div class="port-val"><div class="port-price">$5,461</div><div class="port-chg" style="color:var(--gain);">▲ +2.3%</div></div>
+          </div>
+          <div class="portfolio-item">
+            <div class="port-left"><div class="port-icon">◎</div><div><div class="port-name">Solana</div><div class="port-alloc">14.8 SOL · 12%</div></div></div>
+            <div class="port-val"><div class="port-price">$2,679</div><div class="port-chg" style="color:var(--gain);">▲ +5.8%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <div class="dash-widget">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+          <div class="dash-widget-title" style="margin-bottom:0;">Recent Transactions</div>
+          <button class="btn-ghost" style="padding:6px 14px;font-size:0.8rem;">View All →</button>
+        </div>
+        <div class="recent-tx">
+          <div class="tx-item"><div class="tx-icon dep">💰</div><div class="tx-body"><div class="tx-name">Deposit</div><div class="tx-date">Apr 2, 2025 · 10:24 AM</div></div><div class="tx-amount"><div class="tx-val" style="color:var(--gain);">+$2,500.00</div><div class="tx-status">Completed</div></div></div>
+          <div class="tx-item"><div class="tx-icon buy">📊</div><div class="tx-body"><div class="tx-name">Bought BTC</div><div class="tx-date">Mar 28, 2025 · 3:15 PM</div></div><div class="tx-amount"><div class="tx-val">-$1,200.00</div><div class="tx-status">Completed</div></div></div>
+          <div class="tx-item"><div class="tx-icon buy">📊</div><div class="tx-body"><div class="tx-name">Bought NVDA</div><div class="tx-date">Mar 22, 2025 · 9:42 AM</div></div><div class="tx-amount"><div class="tx-val">-$875.50</div><div class="tx-status">Completed</div></div></div>
+          <div class="tx-item"><div class="tx-icon wit">💸</div><div class="tx-body"><div class="tx-name">Withdrawal</div><div class="tx-date">Mar 15, 2025 · 11:00 AM</div></div><div class="tx-amount"><div class="tx-val" style="color:var(--loss);">-$500.00</div><div class="tx-status">Completed</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 404 PAGE ==================== -->
+<div class="page" id="page-404">
+  <div class="not-found">
+    <div class="nf-code">404</div>
+    <div class="nf-title">Page Not Found</div>
+    <p class="nf-sub">The page you're looking for doesn't exist or has been moved.</p>
+    <button class="btn-primary btn-xl" onclick="navigate('home')">← Back to Home</button>
+  </div>
+</div>
+
+<!-- ==================== FLOATING ELEMENTS ==================== -->
+
+<!-- LIVE ACTIVITY -->
+<div class="activity-float" id="activityFloat" style="display:none;">
+  <div class="activity-header">
+    <span class="live-dot"></span>
+    <span style="font-size:0.78rem;font-weight:600;color:var(--muted);">Live Activity</span>
+  </div>
+  <div id="activityToast"></div>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">↑</button>
+
+<!-- CHATBOT FAB -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" aria-label="Open chat">
+  💬
+  <div class="chat-fab-badge" id="chatBadge">1</div>
+</button>
+
+<!-- CHAT PANEL -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div class="chat-header-left">
+      <div class="chat-avatar">🤖</div>
+      <div>
+        <div class="chat-title">QuantVest Assistant</div>
+        <div class="chat-status"><span class="chat-status-dot"></span>Online — avg reply &lt;1s</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()" aria-label="Close chat">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-quick-replies" id="quickReplies">
+    <button class="quick-reply" onclick="sendChatMsg('How do I get started?')">Getting started</button>
+    <button class="quick-reply" onclick="sendChatMsg('What are the plan prices?')">Pricing</button>
+    <button class="quick-reply" onclick="sendChatMsg('How do withdrawals work?')">Withdrawals</button>
+    <button class="quick-reply" onclick="sendChatMsg('Is my money safe?')">Security</button>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"/>
+    <button class="chat-send" onclick="sendChat()" aria-label="Send">➤</button>
+  </div>
+</div>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner">
+  <div class="cookie-text">
+    🍪 We use cookies to improve your experience and analyze site traffic. By continuing, you agree to our <a href="#">Privacy Policy</a> and <a href="#">Cookie Policy</a>.
+  </div>
+  <div class="cookie-btns">
+    <button class="btn-ghost btn-sm" onclick="cookieDecline()">Decline</button>
+    <button class="btn-primary btn-sm" onclick="cookieAccept()">Accept All</button>
+  </div>
+</div>
+
+<!-- TOAST STACK -->
+<div class="toast-stack" id="toastStack"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="nav-logo" onclick="navigate('home')" style="cursor:pointer;">
+        <div class="logo-box">📈</div>
+        <span class="nav-brand">QuantVest</span>
+      </div>
+      <p>Empowering investors worldwide with commission-free access to global financial markets since 2021.</p>
+      <div style="margin-top:14px;">
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:6px;">Stay updated — no spam, ever.</div>
+        <div class="footer-newsletter">
+          <input class="newsletter-input" placeholder="your@email.com" type="email" id="newsletterEmail"/>
+          <button class="newsletter-btn" onclick="subscribeNewsletter()">Subscribe</button>
+        </div>
+      </div>
+      <div class="social-icons">
+        <a class="social-icon" href="#" aria-label="Twitter">𝕏</a>
+        <a class="social-icon" href="#" aria-label="LinkedIn">in</a>
+        <a class="social-icon" href="#" aria-label="Instagram">📷</a>
+        <a class="social-icon" href="#" aria-label="YouTube">▶</a>
+        <a class="social-icon" href="#" aria-label="Discord">💬</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <a onclick="navigate('home')">Home</a>
+      <a onclick="navigate('markets')">Markets</a>
+      <a onclick="navigate('plans')">Pricing Plans</a>
+      <a onclick="navigate('about')">About Us</a>
+      <a onclick="navigate('dashboard')">Dashboard</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a onclick="navigate('faqs')">FAQs</a>
+      <a onclick="navigate('support')">Contact Us</a>
+      <a href="#">Help Center</a>
+      <a href="#">System Status</a>
+      <a onclick="openChat()">Live Chat</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Terms of Service</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Cookie Policy</a>
+      <a href="#">Risk Disclaimer</a>
+      <a href="#">AML Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-legal">
+      ⚠️ <strong>Risk Disclaimer:</strong> Trading and investing in financial instruments involves significant risk of loss and is not suitable for all investors. Past performance is not indicative of future results. Returns displayed are projections only. QuantVest is a demo platform for illustrative purposes only.
+    </div>
+    <div class="footer-copy">© 2025 QuantVest. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// NAVIGATION
+// ============================================================
+const ALL_PAGES = ['home','markets','about','plans','faqs','support','login','signup','forgot','dashboard','404'];
+const NAV_PAGES = ['home','markets','about','plans','faqs','support'];
+let currentPage = 'home';
+
+function navigate(page) {
+  if (!ALL_PAGES.includes(page)) page = '404';
+  currentPage = page;
+
+  ALL_PAGES.forEach(p => {
+    const el = document.getElementById('page-' + p);
+    if (el) el.classList.remove('active');
+    const nav = document.getElementById('nav-' + p);
+    if (nav) nav.classList.remove('active');
+  });
+
+  const pg = document.getElementById('page-' + page);
+  if (pg) { pg.classList.add('active'); }
+
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Show/hide floating elements
+  const isHome = page === 'home';
+  const af = document.getElementById('activityFloat');
+  if (af) af.style.display = isHome ? 'block' : 'none';
+
+  // Dashboard special case - could redirect to login
+  if (page === 'dashboard') {
+    setTimeout(renderDashChart, 100);
+  }
+}
+
+// ============================================================
+// MOBILE MENU
+// ============================================================
+function toggleMobile() {
+  const menu = document.getElementById('mobileMenu');
+  const overlay = document.getElementById('mobileOverlay');
+  const ham = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  overlay.classList.toggle('open');
+  ham.classList.toggle('open');
+}
+function closeMobile() {
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('mobileOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+// ============================================================
+// SCROLL TO TOP
+// ============================================================
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTopBtn');
+  if (btn) btn.classList.toggle('visible', window.scrollY > 400);
+});
+
+// ============================================================
+// TOAST NOTIFICATIONS
+// ============================================================
+let toastCount = 0;
+function showToast(type, title, msg, duration = 4000) {
+  const stack = document.getElementById('toastStack');
+  const id = 'toast-' + (++toastCount);
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warn: '⚠️' };
+  const div = document.createElement('div');
+  div.className = `toast-notif ${type}`;
+  div.id = id;
+  div.innerHTML = `
+    <div class="toast-icon">${icons[type] || 'ℹ️'}</div>
+    <div class="toast-body">
+      <div class="toast-title">${title}</div>
+      <div class="toast-msg">${msg}</div>
+    </div>
+    <button class="toast-close" onclick="removeToast('${id}')">✕</button>
+  `;
+  stack.appendChild(div);
+  setTimeout(() => removeToast(id), duration);
+}
+function removeToast(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('removing');
+  setTimeout(() => el.remove(), 300);
+}
+
+// ============================================================
+// COOKIE BANNER
+// ============================================================
+function cookieAccept() {
+  document.getElementById('cookieBanner').classList.remove('show');
+  localStorage.setItem('qv_cookie', 'accepted');
+}
+function cookieDecline() {
+  document.getElementById('cookieBanner').classList.remove('show');
+  localStorage.setItem('qv_cookie', 'declined');
+}
+setTimeout(() => {
+  if (!localStorage.getItem('qv_cookie')) {
+    document.getElementById('cookieBanner').classList.add('show');
+  }
+}, 1500);
+
+// ============================================================
+// CRYPTO DATA
+// ============================================================
+const coinMap = {
+  bitcoin: { sym: 'BTC', name: 'Bitcoin', icon: '₿', mc: '$1.3T', vol: '$28.4B' },
+  ethereum: { sym: 'ETH', name: 'Ethereum', icon: 'Ξ', mc: '$459B', vol: '$12.1B' },
+  solana: { sym: 'SOL', name: 'Solana', icon: '◎', mc: '$78B', vol: '$3.2B' },
+  binancecoin: { sym: 'BNB', name: 'BNB', icon: 'B', mc: '$91B', vol: '$1.8B' },
+  ripple: { sym: 'XRP', name: 'Ripple', icon: '✦', mc: '$34B', vol: '$1.4B' },
+  dogecoin: { sym: 'DOGE', name: 'Dogecoin', icon: 'Ð', mc: '$26B', vol: '$0.9B' },
+};
+const fallbackCrypto = {
+  bitcoin: { usd: 67450, usd_24h_change: 2.45 },
+  ethereum: { usd: 3820, usd_24h_change: -1.12 },
+  solana: { usd: 182, usd_24h_change: 4.78 },
+  binancecoin: { usd: 594, usd_24h_change: 0.88 },
+  ripple: { usd: 0.62, usd_24h_change: -0.55 },
+  dogecoin: { usd: 0.18, usd_24h_change: 3.21 },
+};
+let cryptoData = {};
+
+function fmt(n) {
+  if (n >= 1000) return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  if (n >= 1) return '$' + n.toFixed(2);
+  return '$' + n.toFixed(4);
+}
+
+function randBars(up, count = 7) {
+  return Array(count).fill(0).map(() => {
+    const h = 20 + Math.random() * 80;
+    return `<div class="mini-bar ${up ? 'up' : 'down'}" style="height:${h}%"></div>`;
+  }).join('');
+}
+
+function renderSkeletonGrid(gridId, count, cols) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  grid.innerHTML = Array(count).fill(0).map(() => `
+    <div class="crypto-card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
+        <div style="flex:1;">
+          <div class="skel-line shimmer" style="width:60%;margin-bottom:6px;"></div>
+          <div class="skel-line shimmer" style="width:35%;height:10px;"></div>
+        </div>
+        <div class="shimmer" style="width:42px;height:42px;border-radius:50%;"></div>
+      </div>
+      <div class="skel-line shimmer" style="width:70%;height:22px;margin-bottom:8px;"></div>
+      <div class="skel-line shimmer" style="width:45%;height:12px;"></div>
+      <div style="display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:12px;">
+        ${Array(7).fill(0).map(() => `<div class="mini-bar shimmer" style="height:${20+Math.random()*60}%"></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCryptoGrid(data) {
+  const grid = document.getElementById('cryptoGrid');
+  if (!grid) return;
+  const coins = ['bitcoin', 'ethereum', 'solana', 'binancecoin', 'ripple', 'dogecoin'];
+  grid.innerHTML = coins.map(id => {
+    const d = data[id] || {};
+    const m = coinMap[id];
+    const price = d.usd || 0;
+    const chg = d.usd_24h_change || 0;
+    const up = chg >= 0;
+    return `
+      <div class="crypto-card">
+        <div class="crypto-top">
+          <div><div class="crypto-name">${m.name}</div><div class="crypto-sym">${m.sym}</div></div>
+          <div class="crypto-icon">${m.icon}</div>
+        </div>
+        <div class="crypto-price">${fmt(price)}</div>
+        <div class="crypto-change" style="color:${up ? 'var(--gain)' : 'var(--loss)'}">${up ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}%</div>
+        <div class="mini-bars">${randBars(up)}</div>
+      </div>`;
+  }).join('');
+}
+
+async function fetchCrypto() {
+  const grid = document.getElementById('cryptoGrid');
+  if (!grid) return;
+  if (Object.keys(cryptoData).length === 0) renderSkeletonGrid('cryptoGrid', 6);
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple,dogecoin&vs_currencies=usd&include_24hr_change=true', { signal: AbortSignal.timeout(8000) });
+    if (!r.ok) throw new Error();
+    cryptoData = await r.json();
+  } catch {
+    cryptoData = fallbackCrypto;
+  }
+  renderCryptoGrid(cryptoData);
+  renderMarketsTable();
+}
+
+// ============================================================
+// TICKER
+// ============================================================
+async function fetchTicker() {
+  const fallback = [
+    { sym:'BTC', price:'$67,450', chg:'+2.45%', up:true },
+    { sym:'ETH', price:'$3,820', chg:'-1.12%', up:false },
+    { sym:'SOL', price:'$182', chg:'+4.78%', up:true },
+    { sym:'BNB', price:'$594', chg:'+0.88%', up:true },
+    { sym:'XRP', price:'$0.62', chg:'-0.55%', up:false },
+    { sym:'DOGE', price:'$0.18', chg:'+3.21%', up:true },
+    { sym:'ADA', price:'$0.48', chg:'+1.10%', up:true },
+    { sym:'AVAX', price:'$38', chg:'-2.33%', up:false },
+    { sym:'DOT', price:'$8.20', chg:'+0.75%', up:true },
+    { sym:'LINK', price:'$14.50', chg:'+1.88%', up:true },
+  ];
+  let items = fallback;
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,binancecoin,ripple,cardano,dogecoin,avalanche-2&vs_currencies=usd&include_24hr_change=true', { signal: AbortSignal.timeout(6000) });
+    if (r.ok) {
+      const d = await r.json();
+      const sym = { bitcoin:'BTC', ethereum:'ETH', solana:'SOL', binancecoin:'BNB', ripple:'XRP', cardano:'ADA', dogecoin:'DOGE', 'avalanche-2':'AVAX' };
+      items = Object.entries(d).map(([id, v]) => ({
+        sym: sym[id] || id,
+        price: fmt(v.usd),
+        chg: (v.usd_24h_change >= 0 ? '+' : '') + v.usd_24h_change.toFixed(2) + '%',
+        up: v.usd_24h_change >= 0,
+      }));
+    }
+  } catch {}
+
+  const inner = document.getElementById('tickerInner');
+  if (!inner) return;
+  // Duplicate 3 times for seamless looping
+  const tripled = [...items, ...items, ...items];
+  inner.innerHTML = tripled.map(i => `
+    <div class="ticker-item">
+      <span class="ticker-sym">${i.sym}</span>
+      <span class="ticker-price">${i.price}</span>
+      <span class="ticker-change ${i.up ? 'up' : 'down'}">${i.up ? '▲' : '▼'} ${i.chg}</span>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// STOCKS
+// ============================================================
+const stocksData = [
+  { sym:'AAPL', name:'Apple Inc.', price:'$191.45', chg:'+0.82%', up:true },
+  { sym:'TSLA', name:'Tesla Inc.', price:'$248.23', chg:'-1.44%', up:false },
+  { sym:'NVDA', name:'NVIDIA Corp.', price:'$875.10', chg:'+2.30%', up:true },
+  { sym:'AMZN', name:'Amazon.com', price:'$184.60', chg:'+0.55%', up:true },
+];
+function renderStocks() {
+  const grid = document.getElementById('stocksGrid');
+  if (!grid) return;
+  grid.innerHTML = stocksData.map(s => `
+    <div class="crypto-card">
+      <div class="crypto-top">
+        <div><div class="crypto-name">${s.sym}</div><div class="crypto-sym">${s.name}</div></div>
+        <div class="crypto-icon" style="font-size:0.68rem;font-weight:700;letter-spacing:-0.02em;">${s.sym.slice(0,4)}</div>
+      </div>
+      <div class="crypto-price">${s.price}</div>
+      <div class="crypto-change" style="color:${s.up ? 'var(--gain)' : 'var(--loss)'}">${s.up ? '▲' : '▼'} ${s.chg}</div>
+      <div class="mini-bars">${randBars(s.up)}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// MARKETS TABLE
+// ============================================================
+const allMarketsData = [
+  // CRYPTO
+  { cat:'crypto', rank:1, name:'Bitcoin', sym:'BTC', icon:'₿', price:67450, chg:2.45, mc:'$1.32T', vol:'$28.4B' },
+  { cat:'crypto', rank:2, name:'Ethereum', sym:'ETH', icon:'Ξ', price:3820, chg:-1.12, mc:'$459B', vol:'$12.1B' },
+  { cat:'crypto', rank:3, name:'Solana', sym:'SOL', icon:'◎', price:182, chg:4.78, mc:'$78B', vol:'$3.2B' },
+  { cat:'crypto', rank:4, name:'BNB', sym:'BNB', icon:'B', price:594, chg:0.88, mc:'$91B', vol:'$1.8B' },
+  { cat:'crypto', rank:5, name:'XRP', sym:'XRP', icon:'✦', price:0.62, chg:-0.55, mc:'$34B', vol:'$1.4B' },
+  { cat:'crypto', rank:6, name:'Dogecoin', sym:'DOGE', icon:'Ð', price:0.18, chg:3.21, mc:'$26B', vol:'$0.9B' },
+  { cat:'crypto', rank:7, name:'Cardano', sym:'ADA', icon:'A', price:0.48, chg:1.10, mc:'$17B', vol:'$0.5B' },
+  { cat:'crypto', rank:8, name:'Avalanche', sym:'AVAX', icon:'▲', price:38, chg:-2.33, mc:'$16B', vol:'$0.6B' },
+  // STOCKS
+  { cat:'stocks', rank:1, name:'Apple Inc.', sym:'AAPL', icon:'🍎', price:191.45, chg:0.82, mc:'$2.95T', vol:'$52B' },
+  { cat:'stocks', rank:2, name:'NVIDIA Corp.', sym:'NVDA', icon:'🖥', price:875.10, chg:2.30, mc:'$2.18T', vol:'$44B' },
+  { cat:'stocks', rank:3, name:'Microsoft', sym:'MSFT', icon:'🪟', price:415.25, chg:0.45, mc:'$3.08T', vol:'$21B' },
+  { cat:'stocks', rank:4, name:'Amazon', sym:'AMZN', icon:'📦', price:184.60, chg:0.55, mc:'$1.92T', vol:'$32B' },
+  { cat:'stocks', rank:5, name:'Tesla Inc.', sym:'TSLA', icon:'⚡', price:248.23, chg:-1.44, mc:'$790B', vol:'$23B' },
+  { cat:'stocks', rank:6, name:'Meta Platforms', sym:'META', icon:'👁', price:521.80, chg:1.24, mc:'$1.34T', vol:'$18B' },
+  // ETFs
+  { cat:'etf', rank:1, name:'SPDR S&P 500', sym:'SPY', icon:'📊', price:522.40, chg:0.31, mc:'$534B', vol:'$18B' },
+  { cat:'etf', rank:2, name:'Invesco QQQ', sym:'QQQ', icon:'📊', price:445.20, chg:0.58, mc:'$238B', vol:'$12B' },
+  { cat:'etf', rank:3, name:'iShares MSCI', sym:'EEM', icon:'📊', price:42.10, chg:-0.22, mc:'$22B', vol:'$0.8B' },
+  // FOREX
+  { cat:'forex', rank:1, name:'EUR/USD', sym:'EUR/USD', icon:'€', price:1.0854, chg:0.12, mc:'—', vol:'$1.2T' },
+  { cat:'forex', rank:2, name:'GBP/USD', sym:'GBP/USD', icon:'£', price:1.2634, chg:-0.08, mc:'—', vol:'$740B' },
+  { cat:'forex', rank:3, name:'USD/JPY', sym:'USD/JPY', icon:'¥', price:154.30, chg:0.24, mc:'—', vol:'$980B' },
+];
+
+let marketsFilter = 'all';
+let marketsSearch = '';
+
+function filterMarkets(cat, btn) {
+  marketsFilter = cat;
+  document.querySelectorAll('#marketsFilter .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderMarketsTable();
+}
+
+function filterMarketsSearch(val) {
+  marketsSearch = val.toLowerCase();
+  renderMarketsTable();
+}
+
+function sparkline(up) {
+  const heights = Array(7).fill(0).map(() => Math.random() * 100);
+  const max = Math.max(...heights);
+  return heights.map(h => {
+    const pct = (h / max * 100).toFixed(0);
+    return `<div class="m-spark-bar" style="height:${pct}%;width:5px;background:${up ? 'rgba(34,197,94,0.5)' : 'rgba(239,68,68,0.4)'};border-radius:1px 1px 0 0;"></div>`;
+  }).join('');
+}
+
+function renderMarketsTable() {
+  const tbody = document.getElementById('marketsBody');
+  if (!tbody) return;
+
+  // Update crypto prices from live data
+  const liveMap = { BTC: cryptoData.bitcoin, ETH: cryptoData.ethereum, SOL: cryptoData.solana, BNB: cryptoData.binancecoin, XRP: cryptoData.ripple, DOGE: cryptoData.dogecoin };
+
+  let filtered = allMarketsData
+    .map(item => {
+      if (liveMap[item.sym] && liveMap[item.sym].usd) {
+        return { ...item, price: liveMap[item.sym].usd, chg: liveMap[item.sym].usd_24h_change };
+      }
+      return item;
+    })
+    .filter(item => marketsFilter === 'all' || item.cat === marketsFilter)
+    .filter(item => !marketsSearch || item.name.toLowerCase().includes(marketsSearch) || item.sym.toLowerCase().includes(marketsSearch));
+
+  document.getElementById('marketsCount').textContent = filtered.length;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--muted);">No assets found matching "${marketsSearch}"</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((item, i) => {
+    const up = item.chg >= 0;
+    const priceStr = item.sym.includes('/') ? item.price.toFixed(4) : fmt(item.price);
+    return `
+      <tr>
+        <td style="padding-left:20px;color:var(--muted);font-size:0.82rem;">${i + 1}</td>
+        <td>
+          <div class="m-coin-info">
+            <div class="m-coin-icon">${item.icon}</div>
+            <div>
+              <div class="m-coin-name">${item.name}</div>
+              <div class="m-coin-sym">${item.sym}</div>
+            </div>
+          </div>
+        </td>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;">${priceStr}</td>
+        <td>
+          <span class="m-badge ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(item.chg).toFixed(2)}%</span>
+        </td>
+        <td style="color:var(--muted);">${item.mc}</td>
+        <td style="color:var(--muted);">${item.vol}</td>
+        <td>
+          <div class="m-sparkline">${sparkline(up)}</div>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// LIVE ACTIVITY
+// ============================================================
+const actNames = ['Sarah M.','James O.','Emma C.','David R.','Priya N.','Tom W.','Aisha B.','Carlos M.','Lena F.','Marcus W.','Zara A.','Ryan K.','Nina P.','Luke A.','Grace O.'];
+const actActions = ['just withdrew','just deposited','just earned','just invested'];
+const actAmounts = ['$500','$1,200','$3,000','$750','$2,500','$4,800','$1,050','$6,200','$900','$3,750'];
+let lastActName = '';
+
+function getInitials(n) { return n.split(' ').map(p => p[0]).join(''); }
+
+function showActivity() {
+  const af = document.getElementById('activityFloat');
+  if (!af || af.style.display === 'none') return;
+
+  const candidates = actNames.filter(n => n !== lastActName);
+  const name = candidates[Math.floor(Math.random() * candidates.length)];
+  lastActName = name;
+  const action = actActions[Math.floor(Math.random() * actActions.length)];
+  const amount = actAmounts[Math.floor(Math.random() * actAmounts.length)];
+  const timeAgo = ['just now', '2m ago', '1m ago'][Math.floor(Math.random() * 3)];
+
+  const toast = document.getElementById('activityToast');
+  if (!toast) return;
+  toast.innerHTML = `
+    <div class="activity-toast">
+      <div class="act-avatar">${getInitials(name)}</div>
+      <div class="act-text">
+        <div class="act-name">${name}</div>
+        <div class="act-msg">${action} <strong style="color:var(--white);">${amount}</strong></div>
+        <div class="act-time">${timeAgo}</div>
+      </div>
+    </div>`;
+
+  setTimeout(() => {
+    const t = toast.querySelector('.activity-toast');
+    if (t) t.classList.add('fade-out');
+  }, 3000);
+}
+
+// ============================================================
+// CHATBOT
+// ============================================================
+const botKnowledge = [
+  { keys: ['plan','price','cost','how much','subscription'], reply: '💎 Our plans start at <strong>$99/mo (Starter)</strong>, <strong>$299/mo (Growth)</strong>, and <strong>$799/mo (Elite)</strong>. Annual billing saves you 20%. <a onclick="navigate(\'plans\')" style="color:var(--blue-bright);cursor:pointer;">View Plans →</a>' },
+  { keys: ['withdraw','withdrawal','cash out','take out'], reply: '💸 Withdrawals are processed within <strong>24 hours</strong> on business days. Elite members enjoy same-day withdrawals. Go to your Dashboard → Withdraw to get started.' },
+  { keys: ['deposit','fund','add money','top up'], reply: '💰 You can deposit via <strong>bank transfer, credit/debit card, or crypto</strong>. Deposits reflect within 1–24 hours depending on the method.' },
+  { keys: ['safe','secure','security','hack','protect'], reply: '🔒 Absolutely. We use <strong>256-bit AES encryption</strong>, 2FA, and institutional cold storage. Your funds are insured and monitored 24/7.' },
+  { keys: ['start','begin','create','sign up','register','new'], reply: '🚀 Getting started is easy! Click <strong>Sign Up</strong>, fill in your details, verify your email, and you can start investing in under 3 minutes.' },
+  { keys: ['crypto','bitcoin','ethereum','btc','eth'], reply: '₿ We support <strong>500+ cryptocurrencies</strong> including BTC, ETH, SOL, BNB, XRP, and more. Real-time prices are powered by CoinGecko.' },
+  { keys: ['stock','shares','nyse','nasdaq','aapl','tsla'], reply: '📈 Growth and Elite plans include access to <strong>US stocks and ETFs</strong>. Trade Apple, Tesla, NVIDIA, Amazon and more with zero commission.' },
+  { keys: ['return','profit','earn','yield','interest'], reply: '📊 Return targets vary by plan: Starter <strong>2%/mo</strong>, Growth <strong>4%/mo</strong>, Elite <strong>7%/mo</strong>. Remember: these are targets, not guarantees.' },
+  { keys: ['support','help','contact','email','whatsapp'], reply: '📞 You can reach us via <strong>Live Chat (24/7)</strong>, email at support@quantvest.io, or WhatsApp at +1 800 000 0000. <a onclick="navigate(\'support\')" style="color:var(--blue-bright);cursor:pointer;">Visit Support →</a>' },
+  { keys: ['faq','question','how'], reply: '❓ Check out our <a onclick="navigate(\'faqs\')" style="color:var(--blue-bright);cursor:pointer;">FAQ page</a> — we\'ve answered the 10 most common questions about accounts, deposits, withdrawals, and trading.' },
+];
+const defaultReplies = [
+  '🤔 Good question! For detailed assistance, visit our <a onclick="navigate(\'support\')" style="color:var(--blue-bright);cursor:pointer;">Support page</a> or check the <a onclick="navigate(\'faqs\')" style="color:var(--blue-bright);cursor:pointer;">FAQs</a>.',
+  '💬 I\'m not sure about that one. Our support team can help — email us at support@quantvest.io or start a live chat!',
+  '📞 Let me connect you with our team! Visit the <a onclick="navigate(\'support\')" style="color:var(--blue-bright);cursor:pointer;">Support page</a> for all contact options.',
+];
+
+let chatOpen = false;
+let chatInitDone = false;
+
+const initMsgs = [
+  '👋 Hey! I\'m the QuantVest assistant.',
+  'I can help with plans, deposits, withdrawals, security, and more.',
+  'What would you like to know today?',
+];
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const panel = document.getElementById('chatPanel');
+  panel.classList.toggle('open', chatOpen);
+  const badge = document.getElementById('chatBadge');
+  if (badge) badge.style.display = 'none';
+  if (chatOpen && !chatInitDone) {
+    chatInitDone = true;
+    initMsgs.forEach((m, i) => setTimeout(() => addMsg(m, 'bot'), i * 700));
+  }
+}
+
+function openChat() {
+  if (!chatOpen) toggleChat();
+}
+
+function addMsg(html, type) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = `msg msg-${type}`;
+  div.innerHTML = html;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  // Remove quick replies after user sends
+  if (type === 'user') {
+    const qr = document.getElementById('quickReplies');
+    if (qr) qr.style.display = 'none';
+  }
+}
+
+function addTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot msg-typing';
+  div.id = 'typing-indicator';
+  div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+function getBotReply(text) {
+  const lower = text.toLowerCase();
+  for (const item of botKnowledge) {
+    if (item.keys.some(k => lower.includes(k))) return item.reply;
+  }
+  return defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
+}
+
+function sendChatMsg(text) {
+  addMsg(text, 'user');
+  addTyping();
+  setTimeout(() => {
+    removeTyping();
+    addMsg(getBotReply(text), 'bot');
+  }, 800 + Math.random() * 400);
+}
+
+function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const v = inp.value.trim();
+  if (!v) return;
+  inp.value = '';
+  sendChatMsg(v);
+}
+
+// ============================================================
+// FAQ
+// ============================================================
+const faqs = [
+  { cat:'account', q:'How do I create an account?', a:'Click "Sign Up" at the top right, fill in your details, verify your email address, and you\'re ready to start investing. The whole process takes less than 3 minutes.' },
+  { cat:'security', q:'Is my money safe with QuantVest?', a:'Absolutely. We use bank-grade 256-bit AES encryption, multi-factor authentication, and institutional cold storage for digital assets. Funds are insured and monitored around the clock.' },
+  { cat:'payments', q:'How do I deposit funds?', a:'You can deposit via bank transfer, credit/debit card, or cryptocurrency. Deposits are typically credited within 1–24 hours depending on your method. Minimum deposit is $100.' },
+  { cat:'payments', q:'How long do withdrawals take?', a:'Standard withdrawals process within 24 hours on business days. Elite plan members enjoy priority same-day withdrawals. No withdrawal fees — ever.' },
+  { cat:'trading', q:'What markets can I trade on?', a:'Depending on your plan, you can access Crypto (BTC, ETH, SOL and 500+ more), US Stocks (AAPL, TSLA, NVDA and more), ETFs, and Forex markets from a single platform.' },
+  { cat:'trading', q:'Are there any hidden fees?', a:'Never. QuantVest charges zero commission on all trades. We believe in complete transparency — no hidden fees, no surprises. Our revenue comes from the spread on trades.' },
+  { cat:'account', q:'Can I change my plan later?', a:'Yes! You can upgrade or downgrade at any time. Upgrades take effect immediately. Downgrades take effect on your next billing cycle. No penalties or lock-in periods whatsoever.' },
+  { cat:'payments', q:'What is the minimum investment?', a:'Minimum investment is $100 on all plans. Starter portfolios go up to $5,000, Growth to $50,000, and Elite has no upper limit.' },
+  { cat:'trading', q:'Do you offer a demo account?', a:'Yes! All new users automatically get access to a paper trading demo account with $10,000 in virtual funds. Practice strategies risk-free before going live.' },
+  { cat:'account', q:'How do I contact support?', a:'You can reach us via Live Chat (24/7 AI assistant + human handoff), email at support@quantvest.io, or WhatsApp at +1 800 000 0000. Average response time is under 2 hours.' },
+];
+
+let faqFilter = 'all';
+
+function filterFAQs(cat, btn) {
+  faqFilter = cat;
+  document.querySelectorAll('#page-faqs .filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderFAQs();
+}
+
+function renderFAQs() {
+  const list = document.getElementById('faqList');
+  if (!list) return;
+  const filtered = faqFilter === 'all' ? faqs : faqs.filter(f => f.cat === faqFilter);
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--muted);">No FAQs in this category yet.</div>`;
+    return;
+  }
+  list.innerHTML = filtered.map((f, i) => `
+    <div class="faq-item ${i === 0 ? 'open' : ''}" id="faq-item-${i}">
+      <button class="faq-q" onclick="toggleFAQ(${i}, ${filtered.length})">
+        <span>${f.q}</span>
+        <span class="faq-chevron">▼</span>
+      </button>
+      <div class="faq-a" id="faq-a-${i}">
+        <div class="faq-a-inner">${f.a}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleFAQ(idx, total) {
+  for (let i = 0; i < total; i++) {
+    const item = document.getElementById('faq-item-' + i);
+    if (!item) continue;
+    if (i === idx) {
+      item.classList.toggle('open');
+    } else {
+      item.classList.remove('open');
+    }
+  }
+}
+
+// ============================================================
+// PLANS TOGGLE
+// ============================================================
+const prices = {
+  monthly: { starter: '$99', growth: '$299', elite: '$799' },
+  annual: { starter: '$79', growth: '$239', elite: '$639' },
+};
+function setPlansToggle(mode) {
+  ['Monthly', 'Annual'].forEach(m => {
+    const btn = document.getElementById('toggle' + m);
+    if (btn) btn.classList.toggle('active', m.toLowerCase() === mode);
+  });
+  const p = prices[mode];
+  ['starter', 'growth', 'elite'].forEach(plan => {
+    const el = document.getElementById('price-' + plan);
+    if (el) el.innerHTML = p[plan] + '<span>/mo</span>';
+  });
+}
+
+// ============================================================
+// FORMS — SHARED UTILITIES
+// ============================================================
+function clearFieldErr(inputId, errId) {
+  const inp = document.getElementById(inputId);
+  const err = document.getElementById(errId);
+  if (inp) inp.classList.remove('error');
+  if (err) err.textContent = '';
+}
+
+function setErr(errId, msg) {
+  const el = document.getElementById(errId);
+  if (el) el.textContent = msg;
+}
+
+function markErr(inputId, errId, msg) {
+  const inp = document.getElementById(inputId);
+  if (inp) inp.classList.add('error');
+  setErr(errId, msg);
+}
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+function checkPwStrength(v) {
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const bar = document.getElementById('pwBar');
+  const lbl = document.getElementById('pwLabel');
+  if (!bar) return;
+  const states = [
+    { w: '0%', c: '', t: '' },
+    { w: '33%', c: '#EF4444', t: 'Weak' },
+    { w: '66%', c: '#F59E0B', t: 'Medium' },
+    { w: '100%', c: '#22C55E', t: 'Strong 🔒' },
+  ];
+  const s = Math.min(score, 3);
+  bar.style.width = states[s].w;
+  bar.style.background = states[s].c;
+  if (lbl) { lbl.textContent = states[s].t; lbl.style.color = states[s].c; }
+}
+
+// ============================================================
+// LOGIN FORM
+// ============================================================
+function submitLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('l-email');
+  const pw = document.getElementById('l-pw');
+  let ok = true;
+  if (!email.value.trim()) { markErr('l-email', 'l-email-err', '⚠ Email is required.'); ok = false; }
+  else if (!/\S+@\S+\.\S+/.test(email.value)) { markErr('l-email', 'l-email-err', '⚠ Please enter a valid email.'); ok = false; }
+  if (!pw.value) { markErr('l-pw', 'l-pw-err', '⚠ Password is required.'); ok = false; }
+  else if (pw.value.length < 6) { markErr('l-pw', 'l-pw-err', '⚠ Password must be at least 6 characters.'); ok = false; }
+  if (ok) {
+    showToast('success', 'Login Successful!', 'Welcome back! Redirecting to your dashboard...');
+    setTimeout(() => navigate('dashboard'), 1200);
+  }
+}
+
+// ============================================================
+// SIGNUP FORM
+// ============================================================
+function submitSignup(e) {
+  e.preventDefault();
+  const name = document.getElementById('su-name');
+  const email = document.getElementById('su-email');
+  const phone = document.getElementById('su-phone');
+  const pw = document.getElementById('su-pw');
+  const cpw = document.getElementById('su-cpw');
+  const terms = document.getElementById('su-terms');
+  let ok = true;
+
+  if (!name.value.trim()) { markErr('su-name', 'su-name-err', '⚠ Full name is required.'); ok = false; }
+  if (!email.value.trim() || !/\S+@\S+\.\S+/.test(email.value)) { markErr('su-email', 'su-email-err', '⚠ Valid email required.'); ok = false; }
+  if (!phone.value.trim()) { markErr('su-phone', 'su-phone-err', '⚠ Phone number is required.'); ok = false; }
+  if (pw.value.length < 8) { markErr('su-pw', 'su-pw-err', '⚠ Password must be at least 8 characters.'); ok = false; }
+  if (cpw.value !== pw.value) { markErr('su-cpw', 'su-cpw-err', '⚠ Passwords do not match.'); ok = false; }
+  if (!terms.checked) { setErr('su-terms-err', '⚠ You must agree to the Terms of Service.'); ok = false; }
+
+  if (ok) {
+    showToast('success', 'Account Created!', 'Welcome to QuantVest! Redirecting to your dashboard...');
+    setTimeout(() => navigate('dashboard'), 1200);
+  }
+}
+
+// ============================================================
+// FORGOT PASSWORD FORM
+// ============================================================
+function submitForgot(e) {
+  e.preventDefault();
+  const email = document.getElementById('fp-email');
+  if (!email.value.trim() || !/\S+@\S+\.\S+/.test(email.value)) {
+    markErr('fp-email', 'fp-email-err', '⚠ Please enter a valid email address.');
+    return;
+  }
+  document.getElementById('fp-success').style.display = 'flex';
+  showToast('success', 'Reset Link Sent', `Check ${email.value} for your reset link.`);
+  email.value = '';
+}
+
+// ============================================================
+// SUPPORT FORM
+// ============================================================
+function submitSupportForm(e) {
+  e.preventDefault();
+  let ok = true;
+  const fields = [
+    ['sf-name', 'sf-name-err', 'Name is required.'],
+    ['sf-email', 'sf-email-err', 'Email is required.'],
+    ['sf-subject', 'sf-subject-err', 'Please select a subject.'],
+    ['sf-msg', 'sf-msg-err', 'Message is required.'],
+  ];
+  fields.forEach(([id, eid]) => {
+    const el = document.getElementById(id);
+    if (el && !el.value.trim()) { markErr(id, eid, '⚠ ' + fields.find(f => f[0] === id)[2]); ok = false; }
+  });
+  if (ok) {
+    const suc = document.getElementById('sf-success');
+    suc.style.display = 'flex';
+    showToast('success', 'Message Sent!', 'Our team will respond within 2 hours.');
+    e.target.reset();
+    setTimeout(() => { suc.style.display = 'none'; }, 6000);
+  }
+}
+
+// ============================================================
+// NEWSLETTER
+// ============================================================
+function subscribeNewsletter() {
+  const input = document.getElementById('newsletterEmail');
+  if (!input) return;
+  const email = input.value.trim();
+  if (!email || !/\S+@\S+\.\S+/.test(email)) {
+    showToast('error', 'Invalid Email', 'Please enter a valid email address.');
+    return;
+  }
+  showToast('success', 'Subscribed!', `${email} added to our newsletter list.`);
+  input.value = '';
+}
+
+// ============================================================
+// DASHBOARD CHART
+// ============================================================
+function renderDashChart() {
+  const container = document.getElementById('dashChart');
+  if (!container || container.querySelector('svg')) return;
+
+  const vals = [21000, 21800, 22400, 21900, 23100, 23800, 24820];
+  const labels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+  const w = container.clientWidth || 600;
+  const h = 180;
+  const pad = { top: 20, right: 20, bottom: 30, left: 60 };
+  const iw = w - pad.left - pad.right;
+  const ih = h - pad.top - pad.bottom;
+  const min = Math.min(...vals) * 0.98;
+  const max = Math.max(...vals) * 1.01;
+
+  const xScale = i => pad.left + (i / (vals.length - 1)) * iw;
+  const yScale = v => pad.top + ih - ((v - min) / (max - min)) * ih;
+
+  const points = vals.map((v, i) => `${xScale(i)},${yScale(v)}`).join(' ');
+  const areaPoints = `${pad.left},${pad.top + ih} ${points} ${pad.left + iw},${pad.top + ih}`;
+
+  const svg = `
+    <svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:${h}px;">
+      <defs>
+        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(37,99,235,0.3)"/>
+          <stop offset="100%" stop-color="rgba(37,99,235,0)"/>
+        </linearGradient>
+      </defs>
+      <!-- Grid lines -->
+      ${[0,0.25,0.5,0.75,1].map(t => {
+        const y = pad.top + ih * (1-t);
+        const v = Math.round(min + (max-min)*t);
+        return `
+          <line x1="${pad.left}" y1="${y}" x2="${pad.left+iw}" y2="${y}" stroke="rgba(96,165,250,0.08)" stroke-width="1"/>
+          <text x="${pad.left-8}" y="${y+4}" text-anchor="end" font-size="10" fill="rgba(128,148,192,0.8)">$${(v/1000).toFixed(0)}k</text>`;
+      }).join('')}
+      <!-- Area -->
+      <polygon points="${areaPoints}" fill="url(#chartGrad)"/>
+      <!-- Line -->
+      <polyline points="${points}" fill="none" stroke="url(#lineGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs>
+        <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#2563EB"/>
+          <stop offset="100%" stop-color="#06B6D4"/>
+        </linearGradient>
+      </defs>
+      <!-- Dots -->
+      ${vals.map((v, i) => `<circle cx="${xScale(i)}" cy="${yScale(v)}" r="4" fill="#06B6D4" stroke="var(--bg2)" stroke-width="2"/>`).join('')}
+      <!-- Labels -->
+      ${labels.map((l, i) => `<text x="${xScale(i)}" y="${h-8}" text-anchor="middle" font-size="10" fill="rgba(128,148,192,0.8)">${l}</text>`).join('')}
+    </svg>`;
+
+  container.innerHTML = svg;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderFAQs();
+  renderStocks();
+  renderMarketsTable();
+  fetchCrypto();
+  fetchTicker();
+
+  // Stagger activity
+  setTimeout(() => {
+    showActivity();
+    setInterval(showActivity, 4500);
+  }, 2000);
+
+  setInterval(fetchCrypto, 30000);
+  setInterval(renderMarketsTable, 60000);
+}
+
+init();
+</script>
+</body>
+</html>
