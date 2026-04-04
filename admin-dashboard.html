@@ -119,25 +119,145 @@
 
         /* SPLIT LAYOUT */
         .two-col { display: grid; grid-template-columns: 1fr 1.6fr; gap: 20px; }
-        @media (max-width: 1000px) { .two-col { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2,1fr); } }
+
+        /* HAMBURGER */
+        .hamburger {
+            display: none; position: fixed; top: 14px; left: 14px;
+            z-index: 300; background: var(--card); border: 1px solid var(--border);
+            border-radius: 8px; width: 40px; height: 40px;
+            align-items: center; justify-content: center;
+            cursor: pointer; font-size: 18px; color: var(--white);
+        }
+        .overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65); z-index: 150;
+        }
+        .overlay.show { display: block; }
+
+        /* BOTTOM NAV (mobile) */
+        .bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            background: #060c1e; border-top: 1px solid var(--border);
+            z-index: 200; padding: 6px 0 10px;
+            overflow-x: auto; white-space: nowrap;
+        }
+        .bottom-nav-inner { display: inline-flex; gap: 0; min-width: 100%; justify-content: space-around; }
+        .bnav-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 3px; padding: 6px 10px; cursor: pointer;
+            font-size: 9px; color: var(--muted); font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            border-radius: 8px; transition: color 0.2s; position: relative;
+            min-width: 52px;
+        }
+        .bnav-item .bnav-icon { font-size: 18px; }
+        .bnav-item.active { color: var(--red); }
+        .bnav-badge {
+            position: absolute; top: 2px; right: 6px;
+            background: var(--red); color: white; font-size: 9px;
+            font-weight: 700; padding: 1px 5px; border-radius: 99px;
+        }
+
+        /* RESPONSIVE BREAKPOINTS */
+        @media (max-width: 1000px) {
+            .two-col { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+            .sidebar.open { transform: translateX(0); }
+            .hamburger { display: flex; }
+            .main { margin-left: 0; padding: 16px; padding-top: 64px; padding-bottom: 80px; }
+            .bottom-nav { display: block; }
+            .stats-grid { grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 18px; }
+            .stat-val { font-size: 18px; }
+            .page-title { font-size: 20px; }
+            .two-col { grid-template-columns: 1fr; }
+            .card { padding: 16px; }
+            /* Make tables card-style on mobile */
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { display: none; }
+            tbody tr {
+                background: rgba(255,255,255,0.02);
+                border: 1px solid var(--border);
+                border-radius: 10px; margin-bottom: 10px;
+                padding: 12px; display: flex;
+                flex-direction: column; gap: 6px;
+            }
+            tbody td {
+                padding: 0; border: none;
+                font-size: 13px; display: flex;
+                justify-content: space-between; align-items: center;
+                gap: 8px;
+            }
+            tbody td::before {
+                content: attr(data-label);
+                font-size: 10px; text-transform: uppercase;
+                letter-spacing: 0.6px; color: var(--muted);
+                font-weight: 600; flex-shrink: 0; min-width: 80px;
+            }
+            tbody td:last-child { flex-wrap: wrap; justify-content: flex-end; }
+            .toast { left: 14px; right: 14px; min-width: unset; bottom: 80px; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-card { padding: 14px 12px; }
+            .stat-val { font-size: 16px; }
+            .main { padding: 12px; padding-top: 60px; padding-bottom: 80px; }
+        }
     </style>
 </head>
 <body>
 
+<!-- HAMBURGER -->
+<div class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</div>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav">
+    <div class="bottom-nav-inner">
+        <div class="bnav-item active" id="bn-overview" onclick="showPage('overview',null,'bn-overview')">
+            <span class="bnav-icon">📊</span>Overview
+        </div>
+        <div class="bnav-item" id="bn-deposits" onclick="showPage('deposits',null,'bn-deposits')">
+            <span class="bnav-icon">📥</span>Deposits
+            <span class="bnav-badge" id="bnDepositBadge" style="display:none">0</span>
+        </div>
+        <div class="bnav-item" id="bn-kyc" onclick="showPage('kyc',null,'bn-kyc')">
+            <span class="bnav-icon">🪪</span>KYC
+            <span class="bnav-badge" id="bnKycBadge" style="display:none">0</span>
+        </div>
+        <div class="bnav-item" id="bn-users" onclick="showPage('users',null,'bn-users')">
+            <span class="bnav-icon">👥</span>Users
+        </div>
+        <div class="bnav-item" id="bn-inject" onclick="showPage('inject',null,'bn-inject')">
+            <span class="bnav-icon">💉</span>Inject
+        </div>
+        <div class="bnav-item" id="bn-withdrawals" onclick="showPage('withdrawals',null,'bn-withdrawals')">
+            <span class="bnav-icon">⬆️</span>Withdraw
+        </div>
+        <div class="bnav-item" id="bn-transactions" onclick="showPage('transactions',null,'bn-transactions')">
+            <span class="bnav-icon">📋</span>Txns
+        </div>
+    </div>
+</div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
     <div>
         <div class="logo">QuantVest</div>
         <div class="logo-sub">Admin Panel</div>
     </div>
     <nav class="nav">
-        <div class="nav-item active" onclick="showPage('overview',this)">📊 Overview</div>
-        <div class="nav-item" onclick="showPage('deposits',this)">📥 Deposit Requests <span class="badge" id="depositBadge">0</span></div>
-        <div class="nav-item" onclick="showPage('kyc',this)">🪪 KYC Queue <span class="badge" id="kycBadge">0</span></div>
-        <div class="nav-item" onclick="showPage('users',this)">👥 Users</div>
-        <div class="nav-item" onclick="showPage('inject',this)">💉 Inject Funds</div>
-        <div class="nav-item" onclick="showPage('withdrawals',this)">⬆️ Withdrawals</div>
-        <div class="nav-item" onclick="showPage('transactions',this)">📋 All Transactions</div>
+        <div class="nav-item active" onclick="showPage('overview',this,'bn-overview')">📊 Overview</div>
+        <div class="nav-item" onclick="showPage('deposits',this,'bn-deposits')">📥 Deposit Requests <span class="badge" id="depositBadge">0</span></div>
+        <div class="nav-item" onclick="showPage('kyc',this,'bn-kyc')">🪪 KYC Queue <span class="badge" id="kycBadge">0</span></div>
+        <div class="nav-item" onclick="showPage('users',this,'bn-users')">👥 Users</div>
+        <div class="nav-item" onclick="showPage('inject',this,'bn-inject')">💉 Inject Funds</div>
+        <div class="nav-item" onclick="showPage('withdrawals',this,'bn-withdrawals')">⬆️ Withdrawals</div>
+        <div class="nav-item" onclick="showPage('transactions',this,'bn-transactions')">📋 All Transactions</div>
     </nav>
 </aside>
 
@@ -178,7 +298,7 @@
             </div>
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>User</th><th>Amount</th><th>Network</th><th>Date & Time</th><th>TxID</th><th>Receipt</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>User</th><th>Amount</th><th>Network</th><th>Date &amp; Time</th><th>TxID</th><th>Receipt</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody id="depositsBody"><tr><td colspan="8" class="empty-state">Loading...</td></tr></tbody>
                 </table>
             </div>
@@ -365,6 +485,8 @@
         // update badge
         const { count } = await _supabase.from('transactions').select('*',{count:'exact',head:true}).eq('type','deposit').eq('status','pending');
         document.getElementById('depositBadge').innerText = count || 0;
+        const bnDb = document.getElementById('bnDepositBadge');
+        if (bnDb) { bnDb.innerText = count || 0; bnDb.style.display = count > 0 ? 'block' : 'none'; }
 
         const tbody = document.getElementById('depositsBody');
         if (!txs || txs.length === 0) {
@@ -382,16 +504,16 @@
             const receiptUrl = tx.receipt_url || parts['Receipt'] || '';
 
             return `<tr>
-                <td style="color:var(--cyan)">${tx.profiles?.email || '—'}</td>
-                <td><strong style="color:var(--green)">$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</strong></td>
-                <td>${parts['Network'] || '—'}</td>
-                <td style="font-size:12px;color:var(--muted)">${parts['Date'] || new Date(tx.created_at).toLocaleDateString()}</td>
-                <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${(parts['TxID']||'—').slice(0,16)}${parts['TxID']?.length > 16 ? '…':''}</span></td>
-                <td>${hasReceipt
+                <td data-label="User" style="color:var(--cyan)">${tx.profiles?.email || '—'}</td>
+                <td data-label="Amount"><strong style="color:var(--green)">$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</strong></td>
+                <td data-label="Network">${parts['Network'] || '—'}</td>
+                <td data-label="Date" style="font-size:12px;color:var(--muted)">${parts['Date'] || new Date(tx.created_at).toLocaleDateString()}</td>
+                <td data-label="TxID"><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${(parts['TxID']||'—').slice(0,16)}${parts['TxID']?.length > 16 ? '…':''}</span></td>
+                <td data-label="Receipt">${hasReceipt
                     ? `<button class="btn btn-sm" style="background:rgba(6,182,212,0.1);color:var(--cyan);border:1px solid rgba(6,182,212,0.3);padding:4px 10px;font-size:11px" onclick='viewReceipt(${JSON.stringify(tx)})'>🖼 View</button>`
                     : `<span style="color:var(--muted);font-size:12px">No image</span>`}</td>
-                <td><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
-                <td style="display:flex;gap:6px;flex-wrap:wrap">
+                <td data-label="Status"><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
+                <td data-label="Actions" style="display:flex;gap:6px;flex-wrap:wrap">
                     ${status === 'pending' ? `
                     <button class="btn btn-success btn-sm" onclick="approveDeposit('${tx.id}','${tx.user_id}',${tx.amount})">✓ Approve</button>
                     <button class="btn btn-danger btn-sm" onclick="rejectDeposit('${tx.id}')">✕ Reject</button>` 
@@ -454,6 +576,8 @@
             .eq('kyc_status','pending');
 
         document.getElementById('kycBadge').innerText = count || 0;
+        const bnKb = document.getElementById('bnKycBadge');
+        if (bnKb) { bnKb.innerText = count || 0; bnKb.style.display = count > 0 ? 'block' : 'none'; }
 
         const tbody = document.getElementById('kycBody');
         if (!data || data.length === 0) {
@@ -463,12 +587,12 @@
         }
 
         tbody.innerHTML = data.map(u => `<tr>
-            <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${u.id.slice(0,8)}…</td>
-            <td style="color:var(--cyan)">${u.email}</td>
-            <td><a href="${u.kyc_document_url}" target="_blank" style="color:var(--cyan);font-size:12px;text-decoration:none">🔗 View Document</a></td>
-            <td style="font-size:12px;color:var(--muted)">${new Date(u.created_at).toLocaleDateString()}</td>
-            <td><span class="badge-pill bp-${u.kyc_status}">${u.kyc_status}</span></td>
-            <td style="display:flex;gap:6px">
+            <td data-label="ID" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${u.id.slice(0,8)}…</td>
+            <td data-label="Email" style="color:var(--cyan)">${u.email}</td>
+            <td data-label="Document"><a href="${u.kyc_document_url}" target="_blank" style="color:var(--cyan);font-size:12px;text-decoration:none">🔗 View Document</a></td>
+            <td data-label="Submitted" style="font-size:12px;color:var(--muted)">${new Date(u.created_at).toLocaleDateString()}</td>
+            <td data-label="Status"><span class="badge-pill bp-${u.kyc_status}">${u.kyc_status}</span></td>
+            <td data-label="Actions" style="display:flex;gap:6px">
                 <button class="btn btn-success btn-sm" onclick="verifyKYC('${u.id}','verified')">✓ Approve</button>
                 <button class="btn btn-danger btn-sm" onclick="verifyKYC('${u.id}','rejected')">✕ Reject</button>
             </td>
@@ -507,13 +631,13 @@
         document.getElementById('usersBody').innerHTML = users.length === 0
             ? '<tr><td colspan="7" class="empty-state">No users found</td></tr>'
             : users.map(u => `<tr>
-                <td style="color:var(--cyan)">${u.email}</td>
-                <td style="color:var(--green)">${fmt(u.wallet.balance)}</td>
-                <td style="color:var(--gold)">${fmt(u.wallet.current_investment)}</td>
-                <td style="color:var(--cyan)">${fmt(u.wallet.ai_earnings)}</td>
-                <td style="color:var(--green)">${fmt(u.wallet.total_profit)}</td>
-                <td><span class="badge-pill bp-${u.kyc_status||'pending'}">${u.kyc_status||'pending'}</span></td>
-                <td style="font-size:12px;color:var(--muted)">${new Date(u.created_at).toLocaleDateString()}</td>
+                <td data-label="Email" style="color:var(--cyan)">${u.email}</td>
+                <td data-label="Balance" style="color:var(--green)">${fmt(u.wallet.balance)}</td>
+                <td data-label="Invested" style="color:var(--gold)">${fmt(u.wallet.current_investment)}</td>
+                <td data-label="AI Earn" style="color:var(--cyan)">${fmt(u.wallet.ai_earnings)}</td>
+                <td data-label="Profit" style="color:var(--green)">${fmt(u.wallet.total_profit)}</td>
+                <td data-label="KYC"><span class="badge-pill bp-${u.kyc_status||'pending'}">${u.kyc_status||'pending'}</span></td>
+                <td data-label="Joined" style="font-size:12px;color:var(--muted)">${new Date(u.created_at).toLocaleDateString()}</td>
             </tr>`).join('');
     }
 
@@ -621,13 +745,13 @@
             const parts = {};
             note.split(' | ').forEach(p => { const [k,...v] = p.split(': '); parts[k.trim()] = v.join(': ').trim(); });
             return `<tr>
-                <td style="color:var(--cyan)">${tx.profiles?.email||'—'}</td>
-                <td style="color:var(--red);font-weight:700">$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-                <td>${parts['Network']||'—'}</td>
-                <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis">${parts['To']||'—'}</td>
-                <td style="font-size:12px;color:var(--muted)">${new Date(tx.created_at).toLocaleDateString()}</td>
-                <td><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
-                <td>${tx.status==='pending'?`<button class="btn btn-success btn-sm" onclick="markWithdrawalDone('${tx.id}')">✓ Mark Sent</button>`:'—'}</td>
+                <td data-label="User" style="color:var(--cyan)">${tx.profiles?.email||'—'}</td>
+                <td data-label="Amount" style="color:var(--red);font-weight:700">$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                <td data-label="Network">${parts['Network']||'—'}</td>
+                <td data-label="Wallet" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis">${parts['To']||'—'}</td>
+                <td data-label="Date" style="font-size:12px;color:var(--muted)">${new Date(tx.created_at).toLocaleDateString()}</td>
+                <td data-label="Status"><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
+                <td data-label="Action">${tx.status==='pending'?`<button class="btn btn-success btn-sm" onclick="markWithdrawalDone('${tx.id}')">✓ Mark Sent</button>`:'—'}</td>
             </tr>`;
         }).join('');
     }
@@ -653,12 +777,12 @@
         if (!data || data.length === 0) { tbody.innerHTML='<tr><td colspan="6" class="empty-state">No transactions found</td></tr>'; return; }
 
         tbody.innerHTML = data.map(tx => `<tr>
-            <td style="color:var(--cyan)">${tx.profiles?.email||'—'}</td>
-            <td>${icons[tx.type]||'💳'} ${tx.type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</td>
-            <td style="font-weight:700;color:${isDebit(tx)?'var(--red)':'var(--green)'}">${isDebit(tx)?'−':'+'} $${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</td>
-            <td><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
-            <td style="font-size:11px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx.note||'—'}</td>
-            <td style="font-size:12px;color:var(--muted)">${new Date(tx.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+            <td data-label="User" style="color:var(--cyan)">${tx.profiles?.email||'—'}</td>
+            <td data-label="Type">${icons[tx.type]||'💳'} ${tx.type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</td>
+            <td data-label="Amount" style="font-weight:700;color:${isDebit(tx)?'var(--red)':'var(--green)'}">${isDebit(tx)?'−':'+'} $${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+            <td data-label="Status"><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
+            <td data-label="Note" style="font-size:11px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx.note||'—'}</td>
+            <td data-label="Date" style="font-size:12px;color:var(--muted)">${new Date(tx.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
         </tr>`).join('');
     }
 
@@ -688,12 +812,27 @@
     function closeModal() { document.getElementById('receiptModal').classList.remove('show'); }
 
     // ── NAV ──
-    function showPage(name, el) {
+    function showPage(name, el, bnId) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.bnav-item').forEach(n => n.classList.remove('active'));
         document.getElementById('page-' + name).classList.add('active');
         if (el) el.classList.add('active');
+        // sync bottom nav
+        const bnTarget = bnId || 'bn-' + name;
+        const bnEl = document.getElementById(bnTarget);
+        if (bnEl) bnEl.classList.add('active');
         if (name === 'inject') loadInjectHistory();
+        // close sidebar on mobile
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('overlay').classList.remove('show');
+        }
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('show');
     }
 
     // ── TOAST ──
