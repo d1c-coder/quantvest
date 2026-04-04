@@ -2,89 +2,711 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>QuantVest Admin — Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantVest — Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #020510; --card: #0c1535; --blue: #2563EB; --white: #F0F4FF; }
-        body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; margin: 0; display: flex; }
-        .main { flex: 1; padding: 50px; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
-        .panel { background: var(--card); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #2563EB; background: #020510; color: white; }
-        button { background: var(--blue); cursor: pointer; border: none; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
-        .btn-small { width: auto; padding: 5px 10px; font-size: 12px; }
+        :root {
+            --bg: #020510; --card: #080f26; --card2: #0b1530;
+            --blue: #2563EB; --cyan: #06B6D4; --green: #22C55E;
+            --red: #EF4444; --gold: #F59E0B; --white: #F0F4FF;
+            --muted: #8094C0; --border: rgba(96,165,250,0.1);
+            --sidebar-w: 240px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w); background: #060c1e;
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            padding: 28px 18px; position: fixed;
+            top: 0; left: 0; height: 100vh; z-index: 100;
+        }
+        .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--red); }
+        .logo-sub { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+        .nav { margin-top: 32px; flex: 1; }
+        .nav-item {
+            display: flex; align-items: center; gap: 11px;
+            padding: 10px 13px; border-radius: 9px; cursor: pointer;
+            font-size: 13px; font-weight: 500; color: var(--muted);
+            transition: all 0.2s; margin-bottom: 3px;
+        }
+        .nav-item:hover { color: var(--white); background: rgba(239,68,68,0.08); }
+        .nav-item.active { color: var(--white); background: rgba(239,68,68,0.12); border-left: 2px solid var(--red); }
+        .badge { background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 99px; margin-left: auto; }
+
+        /* MAIN */
+        .main { margin-left: var(--sidebar-w); flex: 1; padding: 32px; overflow-y: auto; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .page-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+        .page-sub { color: var(--muted); font-size: 13px; margin-bottom: 26px; }
+
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
+        .stat-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 20px 18px; position: relative; overflow: hidden;
+        }
+        .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--red),var(--gold)); }
+        .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+        .stat-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-top: 8px; }
+
+        /* CARD */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 22px; }
+        .card-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+        /* FORM */
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 6px; }
+        .form-input {
+            width: 100%; padding: 11px 13px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(96,165,250,0.2);
+            border-radius: 8px; color: var(--white);
+            font-size: 13px; font-family: 'DM Sans', sans-serif;
+        }
+        .form-input:focus { outline: none; border-color: var(--cyan); }
+        .form-select {
+            width: 100%; padding: 11px 13px; background: #0a1228;
+            border: 1px solid rgba(96,165,250,0.2);
+            border-radius: 8px; color: var(--white);
+            font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer;
+        }
+        .btn {
+            padding: 10px 20px; border-radius: 8px; border: none;
+            cursor: pointer; font-weight: 700; font-size: 13px;
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-primary { background: linear-gradient(135deg,var(--blue),#1e40af); color: white; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.4); }
+        .btn-success { background: linear-gradient(135deg,#065f46,#047857); color: white; }
+        .btn-success:hover { transform: translateY(-1px); }
+        .btn-danger { background: linear-gradient(135deg,#7f1d1d,#991b1b); color: white; }
+        .btn-danger:hover { transform: translateY(-1px); }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+        .btn-gold { background: linear-gradient(135deg,#78350f,#b45309); color: white; }
+
+        /* TABLE */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th { padding: 10px 14px; text-align: left; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid var(--border); font-weight: 600; }
+        tbody td { padding: 13px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .empty-state { text-align: center; padding: 32px; color: var(--muted); font-size: 13px; }
+
+        /* BADGES */
+        .badge-pill { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+        .bp-pending { background: rgba(245,158,11,0.15); color: var(--gold); border: 1px solid rgba(245,158,11,0.3); }
+        .bp-approved, .bp-verified, .bp-completed, .bp-active { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+        .bp-rejected, .bp-failed { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+
+        /* RECEIPT IMAGE MODAL */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 999; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: var(--card2); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; }
+        .modal-img { width: 100%; border-radius: 10px; margin-top: 12px; }
+        .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 22px; right: 22px; background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 18px; font-size: 13px; z-index: 9999; min-width: 240px; transform: translateY(80px); opacity: 0; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); display: flex; align-items: center; gap: 9px; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: rgba(34,197,94,0.3); }
+        .toast.error { border-color: rgba(239,68,68,0.3); }
+
+        /* SPLIT LAYOUT */
+        .two-col { display: grid; grid-template-columns: 1fr 1.6fr; gap: 20px; }
+        @media (max-width: 1000px) { .two-col { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2,1fr); } }
     </style>
 </head>
 <body>
-    <div class="main">
-        <h1 style="font-family:Syne">Global Administration</h1>
-        
-        <div class="admin-grid">
-            <div class="panel">
-                <h3 style="font-family:Syne">Inject Funds</h3>
-                <input type="text" id="targetEmail" placeholder="User Email">
-                <input type="number" id="amount" placeholder="Amount ($)">
-                <select id="targetField">
-                    <option value="balance">Add to Balance</option>
-                    <option value="current_investment">Add to Investment</option>
-                    <option value="ai_earnings">Add to AI Earnings</option>
-                </select>
-                <button onclick="injectFunds()">Execute Transaction</button>
-            </div>
 
-            <div class="panel">
-                <h3 style="font-family:Syne">KYC Approval Queue</h3>
-                <table id="kycTable">
-                    <thead><tr><th>User</th><th>Document</th><th>Action</th></tr></thead>
-                    <tbody id="kycBody"></tbody>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div>
+        <div class="logo">QuantVest</div>
+        <div class="logo-sub">Admin Panel</div>
+    </div>
+    <nav class="nav">
+        <div class="nav-item active" onclick="showPage('overview',this)">📊 Overview</div>
+        <div class="nav-item" onclick="showPage('deposits',this)">📥 Deposit Requests <span class="badge" id="depositBadge">0</span></div>
+        <div class="nav-item" onclick="showPage('kyc',this)">🪪 KYC Queue <span class="badge" id="kycBadge">0</span></div>
+        <div class="nav-item" onclick="showPage('users',this)">👥 Users</div>
+        <div class="nav-item" onclick="showPage('inject',this)">💉 Inject Funds</div>
+        <div class="nav-item" onclick="showPage('withdrawals',this)">⬆️ Withdrawals</div>
+        <div class="nav-item" onclick="showPage('transactions',this)">📋 All Transactions</div>
+    </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- OVERVIEW -->
+    <div class="page active" id="page-overview">
+        <div class="page-title">Admin Overview</div>
+        <div class="page-sub">Platform-wide statistics</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-label">Total Users</div><div class="stat-val" id="statUsers">—</div></div>
+            <div class="stat-card"><div class="stat-label">Total Deposits</div><div class="stat-val" id="statDeposits" style="color:var(--green)">—</div></div>
+            <div class="stat-card"><div class="stat-label">Total Invested</div><div class="stat-val" id="statInvested" style="color:var(--gold)">—</div></div>
+            <div class="stat-card"><div class="stat-label">Pending Requests</div><div class="stat-val" id="statPending" style="color:var(--red)">—</div></div>
+        </div>
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">📥 Pending Deposits</div>
+                <div id="overview-deposits"><div class="empty-state">Loading...</div></div>
+            </div>
+            <div class="card">
+                <div class="card-title">🪪 Pending KYC</div>
+                <div id="overview-kyc"><div class="empty-state">Loading...</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEPOSIT REQUESTS -->
+    <div class="page" id="page-deposits">
+        <div class="page-title">Deposit Requests</div>
+        <div class="page-sub">Review user deposit receipts and credit their accounts</div>
+        <div class="card">
+            <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-sm" onclick="loadDeposits('pending')">Pending</button>
+                <button class="btn btn-sm" style="background:rgba(34,197,94,0.1);color:var(--green);border:1px solid rgba(34,197,94,0.3)" onclick="loadDeposits('completed')">Approved</button>
+                <button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.3)" onclick="loadDeposits('rejected')">Rejected</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>User</th><th>Amount</th><th>Network</th><th>Date & Time</th><th>TxID</th><th>Receipt</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="depositsBody"><tr><td colspan="8" class="empty-state">Loading...</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <script>
-        const supabase = supabase.createClient('YOUR_URL', 'SERVICE_ROLE_KEY'); // Use Service Key for Admin powers
+    <!-- KYC -->
+    <div class="page" id="page-kyc">
+        <div class="page-title">KYC Verification Queue</div>
+        <div class="page-sub">Review identity documents and approve or reject accounts</div>
+        <div class="card">
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>User</th><th>Email</th><th>Document</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="kycBody"><tr><td colspan="6" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-        async function loadKYC() {
-            const { data } = await supabase.from('profiles').select('*').not('kyc_document_url', 'is', null).eq('kyc_status', 'pending');
-            const body = document.getElementById('kycBody');
-            body.innerHTML = data.map(u => `
-                <tr>
-                    <td>${u.email}</td>
-                    <td><a href="${u.kyc_document_url}" target="_blank" style="color:#06B6D4">View ID</a></td>
-                    <td>
-                        <button class="btn-small" onclick="verifyUser('${u.id}', 'verified')">Approve</button>
-                        <button class="btn-small" style="background:red" onclick="verifyUser('${u.id}', 'rejected')">X</button>
-                    </td>
-                </tr>
-            `).join('');
+    <!-- USERS -->
+    <div class="page" id="page-users">
+        <div class="page-title">All Users</div>
+        <div class="page-sub">View user accounts, balances and KYC status</div>
+        <div class="card">
+            <div style="margin-bottom:14px">
+                <input type="text" class="form-input" id="userSearch" placeholder="🔍  Search by email..." oninput="filterUsers()" style="max-width:320px">
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Email</th><th>Balance</th><th>Invested</th><th>AI Earnings</th><th>Profit</th><th>KYC</th><th>Joined</th></tr></thead>
+                    <tbody id="usersBody"><tr><td colspan="7" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- INJECT FUNDS -->
+    <div class="page" id="page-inject">
+        <div class="page-title">Inject / Adjust Funds</div>
+        <div class="page-sub">Credit or deduct from any user wallet field</div>
+        <div class="two-col">
+            <div class="card">
+                <div class="card-title">💉 Fund Injection</div>
+                <div class="form-group">
+                    <label class="form-label">User Email</label>
+                    <input type="text" class="form-input" id="injectEmail" placeholder="user@example.com" oninput="lookupUser()">
+                </div>
+                <div id="userLookupResult" style="display:none;padding:12px;background:rgba(6,182,212,0.07);border:1px solid rgba(6,182,212,0.2);border-radius:9px;font-size:13px;margin-bottom:14px"></div>
+                <div class="form-group">
+                    <label class="form-label">Field to Update</label>
+                    <select class="form-select" id="injectField">
+                        <option value="balance">Available Balance</option>
+                        <option value="current_investment">Current Investment</option>
+                        <option value="ai_earnings">AI Earnings</option>
+                        <option value="total_profit">Total Profit</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Operation</label>
+                    <select class="form-select" id="injectOp">
+                        <option value="add">➕ Add to current value</option>
+                        <option value="set">📌 Set exact value</option>
+                        <option value="subtract">➖ Deduct from current value</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount ($)</label>
+                    <input type="number" class="form-input" id="injectAmount" placeholder="0.00" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Admin Note (optional)</label>
+                    <input type="text" class="form-input" id="injectNote" placeholder="e.g. Deposit credited after verification">
+                </div>
+                <button class="btn btn-primary" style="width:100%" onclick="injectFunds()">⚡ Execute</button>
+            </div>
+            <div class="card">
+                <div class="card-title">📋 Recent Injections</div>
+                <div id="injectHistory"><div class="empty-state">No injections yet</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WITHDRAWALS -->
+    <div class="page" id="page-withdrawals">
+        <div class="page-title">Withdrawal Requests</div>
+        <div class="page-sub">Pending user withdrawal requests to process</div>
+        <div class="card">
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>User</th><th>Amount</th><th>Network</th><th>Wallet Address</th><th>Requested</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="withdrawalsBody"><tr><td colspan="7" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALL TRANSACTIONS -->
+    <div class="page" id="page-transactions">
+        <div class="page-title">All Transactions</div>
+        <div class="page-sub">Full platform transaction ledger</div>
+        <div class="card">
+            <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+                <select class="form-select" id="txTypeFilter" onchange="loadAllTransactions()" style="width:auto;min-width:160px">
+                    <option value="">All Types</option>
+                    <option value="deposit">Deposit</option>
+                    <option value="withdrawal">Withdrawal</option>
+                    <option value="investment">Investment</option>
+                    <option value="ai_injection">AI Injection</option>
+                </select>
+                <select class="form-select" id="txStatusFilter" onchange="loadAllTransactions()" style="width:auto;min-width:150px">
+                    <option value="">All Statuses</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="active">Active</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>User</th><th>Type</th><th>Amount</th><th>Status</th><th>Note</th><th>Date</th></tr></thead>
+                    <tbody id="allTxBody"><tr><td colspan="6" class="empty-state">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- Receipt Image Modal -->
+<div class="modal-overlay" id="receiptModal" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:4px">🧾 Deposit Receipt</div>
+        <div id="modalMeta" style="font-size:12px;color:var(--muted);margin-bottom:12px"></div>
+        <div id="modalNotes" style="font-size:13px;line-height:1.8;background:rgba(255,255,255,0.03);border-radius:8px;padding:12px;margin-bottom:12px"></div>
+        <img id="modalImg" class="modal-img" src="" style="display:none">
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span id="toastIcon">✅</span><span id="toastMsg"></span></div>
+
+<script>
+    const SUPABASE_URL = 'https://wcajayygjtivdmnogcsj.supabase.co';
+    // ⚠️ USE YOUR SERVICE ROLE KEY HERE — never expose this publicly
+    const SUPABASE_SERVICE_KEY = 'YOUR_SERVICE_ROLE_KEY_HERE';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+
+    let allUsersCache = [];
+    let toastTimer;
+
+    // ── INIT ──
+    async function init() {
+        await Promise.all([loadStats(), loadDeposits('pending'), loadKYC(), loadUsers(), loadWithdrawals(), loadAllTransactions()]);
+    }
+
+    // ── STATS ──
+    async function loadStats() {
+        const [{ count: userCount }, { data: wallets }, { data: pendingTxs }] = await Promise.all([
+            _supabase.from('profiles').select('*', { count: 'exact', head: true }),
+            _supabase.from('wallets').select('balance, current_investment'),
+            _supabase.from('transactions').select('id').eq('status','pending')
+        ]);
+
+        const totalBal = wallets ? wallets.reduce((s,w) => s + Number(w.balance), 0) : 0;
+        const totalInv = wallets ? wallets.reduce((s,w) => s + Number(w.current_investment), 0) : 0;
+
+        document.getElementById('statUsers').innerText = userCount || 0;
+        document.getElementById('statDeposits').innerText = '$' + totalBal.toLocaleString('en-US',{minimumFractionDigits:2});
+        document.getElementById('statInvested').innerText = '$' + totalInv.toLocaleString('en-US',{minimumFractionDigits:2});
+        document.getElementById('statPending').innerText = pendingTxs ? pendingTxs.length : 0;
+    }
+
+    // ── DEPOSITS ──
+    async function loadDeposits(status = 'pending') {
+        const { data: txs } = await _supabase
+            .from('transactions')
+            .select('*, profiles(email)')
+            .eq('type','deposit')
+            .eq('status', status)
+            .order('created_at', { ascending: false });
+
+        // update badge
+        const { count } = await _supabase.from('transactions').select('*',{count:'exact',head:true}).eq('type','deposit').eq('status','pending');
+        document.getElementById('depositBadge').innerText = count || 0;
+
+        const tbody = document.getElementById('depositsBody');
+        if (!txs || txs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="empty-state">No ${status} deposit requests</td></tr>`;
+            // also update overview
+            document.getElementById('overview-deposits').innerHTML = `<div class="empty-state" style="padding:16px">No pending deposits 🎉</div>`;
+            return;
         }
 
-        async function verifyUser(id, status) {
-            await supabase.from('profiles').update({ kyc_status: status }).eq('id', id);
-            alert("Status updated");
-            loadKYC();
+        const rows = txs.map(tx => {
+            const note = tx.note || '';
+            const parts = {};
+            note.split(' | ').forEach(p => { const [k,...v] = p.split(': '); parts[k.trim()] = v.join(': ').trim(); });
+            const hasReceipt = tx.receipt_url || (parts['Receipt'] && parts['Receipt'] !== 'N/A');
+            const receiptUrl = tx.receipt_url || parts['Receipt'] || '';
+
+            return `<tr>
+                <td style="color:var(--cyan)">${tx.profiles?.email || '—'}</td>
+                <td><strong style="color:var(--green)">$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</strong></td>
+                <td>${parts['Network'] || '—'}</td>
+                <td style="font-size:12px;color:var(--muted)">${parts['Date'] || new Date(tx.created_at).toLocaleDateString()}</td>
+                <td><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${(parts['TxID']||'—').slice(0,16)}${parts['TxID']?.length > 16 ? '…':''}</span></td>
+                <td>${hasReceipt
+                    ? `<button class="btn btn-sm" style="background:rgba(6,182,212,0.1);color:var(--cyan);border:1px solid rgba(6,182,212,0.3);padding:4px 10px;font-size:11px" onclick='viewReceipt(${JSON.stringify(tx)})'>🖼 View</button>`
+                    : `<span style="color:var(--muted);font-size:12px">No image</span>`}</td>
+                <td><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
+                <td style="display:flex;gap:6px;flex-wrap:wrap">
+                    ${status === 'pending' ? `
+                    <button class="btn btn-success btn-sm" onclick="approveDeposit('${tx.id}','${tx.user_id}',${tx.amount})">✓ Approve</button>
+                    <button class="btn btn-danger btn-sm" onclick="rejectDeposit('${tx.id}')">✕ Reject</button>` 
+                    : `<span style="color:var(--muted);font-size:12px">${tx.status}</span>`}
+                </td>
+            </tr>`;
+        });
+
+        tbody.innerHTML = rows.join('');
+
+        // Overview panel — show first 4
+        document.getElementById('overview-deposits').innerHTML = txs.slice(0,4).map(tx => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
+                <div><div style="color:var(--white)">${tx.profiles?.email||'—'}</div><div style="color:var(--muted);font-size:11px">${new Date(tx.created_at).toLocaleDateString()}</div></div>
+                <div style="display:flex;align-items:center;gap:10px">
+                    <strong style="color:var(--green)">$${Number(tx.amount).toLocaleString()}</strong>
+                    <button class="btn btn-success btn-sm" onclick="approveDeposit('${tx.id}','${tx.user_id}',${tx.amount})">✓</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function approveDeposit(txId, userId, amount) {
+        if (!confirm(`Credit $${amount} to this user's balance?`)) return;
+
+        // 1. Update transaction status
+        const { error: txErr } = await _supabase.from('transactions').update({ status: 'completed' }).eq('id', txId);
+        if (txErr) { showToast('❌', txErr.message, 'error'); return; }
+
+        // 2. Add to wallet balance
+        const { data: wallet } = await _supabase.from('wallets').select('balance').eq('user_id', userId).single();
+        const newBal = Number(wallet?.balance || 0) + Number(amount);
+        const { error: wErr } = await _supabase.from('wallets').update({ balance: newBal, updated_at: new Date().toISOString() }).eq('user_id', userId);
+        if (wErr) { showToast('❌', 'Balance update failed: ' + wErr.message, 'error'); return; }
+
+        // 3. Log injection in transactions
+        await _supabase.from('transactions').insert({
+            user_id: userId, type: 'ai_injection', amount: Number(amount),
+            status: 'completed', note: `Admin credited deposit approval — Tx: ${txId}`
+        });
+
+        showToast('✅', `$${amount} credited to user balance!`, 'success');
+        await loadDeposits('pending');
+        await loadStats();
+    }
+
+    async function rejectDeposit(txId) {
+        if (!confirm('Reject this deposit request?')) return;
+        await _supabase.from('transactions').update({ status: 'rejected' }).eq('id', txId);
+        showToast('🚫', 'Deposit rejected', 'error');
+        await loadDeposits('pending');
+    }
+
+    // ── KYC ──
+    async function loadKYC() {
+        const { data, count } = await _supabase
+            .from('profiles')
+            .select('*', { count: 'exact' })
+            .not('kyc_document_url','is',null)
+            .eq('kyc_status','pending');
+
+        document.getElementById('kycBadge').innerText = count || 0;
+
+        const tbody = document.getElementById('kycBody');
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No pending KYC submissions 🎉</td></tr>';
+            document.getElementById('overview-kyc').innerHTML = '<div class="empty-state" style="padding:16px">No pending KYC 🎉</div>';
+            return;
         }
 
-        async function injectFunds() {
-            const email = document.getElementById('targetEmail').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-            const field = document.getElementById('targetField').value;
+        tbody.innerHTML = data.map(u => `<tr>
+            <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${u.id.slice(0,8)}…</td>
+            <td style="color:var(--cyan)">${u.email}</td>
+            <td><a href="${u.kyc_document_url}" target="_blank" style="color:var(--cyan);font-size:12px;text-decoration:none">🔗 View Document</a></td>
+            <td style="font-size:12px;color:var(--muted)">${new Date(u.created_at).toLocaleDateString()}</td>
+            <td><span class="badge-pill bp-${u.kyc_status}">${u.kyc_status}</span></td>
+            <td style="display:flex;gap:6px">
+                <button class="btn btn-success btn-sm" onclick="verifyKYC('${u.id}','verified')">✓ Approve</button>
+                <button class="btn btn-danger btn-sm" onclick="verifyKYC('${u.id}','rejected')">✕ Reject</button>
+            </td>
+        </tr>`).join('');
 
-            const { data: profile } = await supabase.from('profiles').select('id').eq('email', email).single();
-            if(!profile) return alert("User not found");
+        document.getElementById('overview-kyc').innerHTML = data.slice(0,4).map(u => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
+                <div><div style="color:var(--white)">${u.email}</div><a href="${u.kyc_document_url}" target="_blank" style="color:var(--cyan);font-size:11px">View ID →</a></div>
+                <div style="display:flex;gap:6px">
+                    <button class="btn btn-success btn-sm" onclick="verifyKYC('${u.id}','verified')">✓</button>
+                    <button class="btn btn-danger btn-sm" onclick="verifyKYC('${u.id}','rejected')">✕</button>
+                </div>
+            </div>
+        `).join('');
+    }
 
-            const { data: wallet } = await supabase.from('wallets').select(field).eq('user_id', profile.id).single();
-            const newVal = parseFloat(wallet[field]) + amount;
+    async function verifyKYC(id, status) {
+        await _supabase.from('profiles').update({ kyc_status: status }).eq('id', id);
+        showToast(status === 'verified' ? '✅' : '🚫', `KYC ${status}`, status === 'verified' ? 'success' : 'error');
+        await loadKYC();
+    }
 
-            const update = {}; update[field] = newVal;
-            await supabase.from('wallets').update(update).eq('user_id', profile.id);
-            alert("Funds successfully injected");
+    // ── USERS ──
+    async function loadUsers() {
+        const { data: profiles } = await _supabase.from('profiles').select('*').order('created_at', { ascending: false });
+        const { data: wallets } = await _supabase.from('wallets').select('*');
+
+        const walletMap = {};
+        wallets?.forEach(w => walletMap[w.user_id] = w);
+        allUsersCache = (profiles || []).map(p => ({ ...p, wallet: walletMap[p.id] || {} }));
+        renderUsers(allUsersCache);
+    }
+
+    function renderUsers(users) {
+        const fmt = v => '$' + Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2});
+        document.getElementById('usersBody').innerHTML = users.length === 0
+            ? '<tr><td colspan="7" class="empty-state">No users found</td></tr>'
+            : users.map(u => `<tr>
+                <td style="color:var(--cyan)">${u.email}</td>
+                <td style="color:var(--green)">${fmt(u.wallet.balance)}</td>
+                <td style="color:var(--gold)">${fmt(u.wallet.current_investment)}</td>
+                <td style="color:var(--cyan)">${fmt(u.wallet.ai_earnings)}</td>
+                <td style="color:var(--green)">${fmt(u.wallet.total_profit)}</td>
+                <td><span class="badge-pill bp-${u.kyc_status||'pending'}">${u.kyc_status||'pending'}</span></td>
+                <td style="font-size:12px;color:var(--muted)">${new Date(u.created_at).toLocaleDateString()}</td>
+            </tr>`).join('');
+    }
+
+    function filterUsers() {
+        const q = document.getElementById('userSearch').value.toLowerCase();
+        renderUsers(allUsersCache.filter(u => u.email?.toLowerCase().includes(q)));
+    }
+
+    // ── INJECT FUNDS ──
+    let lookupDebounce;
+    async function lookupUser() {
+        clearTimeout(lookupDebounce);
+        lookupDebounce = setTimeout(async () => {
+            const email = document.getElementById('injectEmail').value.trim();
+            const box = document.getElementById('userLookupResult');
+            if (!email || !email.includes('@')) { box.style.display='none'; return; }
+            const { data: profile } = await _supabase.from('profiles').select('id,email,kyc_status').eq('email', email).single();
+            if (!profile) { box.style.display='block'; box.innerHTML='<span style="color:var(--red)">❌ User not found</span>'; return; }
+            const { data: wallet } = await _supabase.from('wallets').select('*').eq('user_id', profile.id).single();
+            const fmt = v => '$' + Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2});
+            box.style.display='block';
+            box.innerHTML=`<div style="color:var(--green);font-weight:600;margin-bottom:6px">✅ Found: ${profile.email}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:12px">
+                    <span style="color:var(--muted)">Balance</span><span>${fmt(wallet?.balance)}</span>
+                    <span style="color:var(--muted)">Invested</span><span>${fmt(wallet?.current_investment)}</span>
+                    <span style="color:var(--muted)">AI Earnings</span><span>${fmt(wallet?.ai_earnings)}</span>
+                    <span style="color:var(--muted)">KYC</span><span class="badge-pill bp-${profile.kyc_status}">${profile.kyc_status}</span>
+                </div>`;
+        }, 600);
+    }
+
+    async function injectFunds() {
+        const email = document.getElementById('injectEmail').value.trim();
+        const amount = parseFloat(document.getElementById('injectAmount').value);
+        const field = document.getElementById('injectField').value;
+        const op = document.getElementById('injectOp').value;
+        const note = document.getElementById('injectNote').value.trim();
+
+        if (!email || isNaN(amount) || amount <= 0) { showToast('⚠️', 'Fill in email and a valid amount', 'error'); return; }
+
+        const { data: profile } = await _supabase.from('profiles').select('id').eq('email', email).single();
+        if (!profile) { showToast('❌', 'User not found', 'error'); return; }
+
+        const { data: wallet } = await _supabase.from('wallets').select(field).eq('user_id', profile.id).single();
+        const current = Number(wallet?.[field] || 0);
+
+        let newVal;
+        if (op === 'add') newVal = current + amount;
+        else if (op === 'subtract') newVal = Math.max(0, current - amount);
+        else newVal = amount; // set
+
+        const { error } = await _supabase.from('wallets')
+            .update({ [field]: newVal, updated_at: new Date().toISOString() })
+            .eq('user_id', profile.id);
+
+        if (error) { showToast('❌', error.message, 'error'); return; }
+
+        // Log as transaction
+        await _supabase.from('transactions').insert({
+            user_id: profile.id, type: 'ai_injection',
+            amount: amount, status: 'completed',
+            note: `Admin ${op} on ${field}: ${note || 'No note'}`
+        });
+
+        showToast('✅', `${field} updated to $${newVal.toLocaleString()}`, 'success');
+        document.getElementById('injectAmount').value = '';
+        document.getElementById('injectNote').value = '';
+        lookupUser();
+        loadInjectHistory();
+        loadStats();
+    }
+
+    async function loadInjectHistory() {
+        const { data } = await _supabase.from('transactions')
+            .select('*, profiles(email)')
+            .eq('type','ai_injection')
+            .order('created_at',{ascending:false})
+            .limit(8);
+        if (!data || data.length === 0) return;
+        document.getElementById('injectHistory').innerHTML = data.map(tx => `
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
+                <div><div>${tx.profiles?.email||'—'}</div><div style="font-size:11px;color:var(--muted)">${tx.note?.split(':').slice(1).join(':').trim()||''}</div></div>
+                <div style="text-align:right">
+                    <div style="color:var(--green);font-weight:700">$${Number(tx.amount).toLocaleString()}</div>
+                    <div style="font-size:11px;color:var(--muted)">${new Date(tx.created_at).toLocaleDateString()}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ── WITHDRAWALS ──
+    async function loadWithdrawals() {
+        const { data } = await _supabase
+            .from('transactions')
+            .select('*, profiles(email)')
+            .eq('type','withdrawal')
+            .order('created_at',{ascending:false})
+            .limit(50);
+
+        const tbody = document.getElementById('withdrawalsBody');
+        if (!data || data.length === 0) { tbody.innerHTML='<tr><td colspan="7" class="empty-state">No withdrawal requests</td></tr>'; return; }
+
+        tbody.innerHTML = data.map(tx => {
+            const note = tx.note || '';
+            const parts = {};
+            note.split(' | ').forEach(p => { const [k,...v] = p.split(': '); parts[k.trim()] = v.join(': ').trim(); });
+            return `<tr>
+                <td style="color:var(--cyan)">${tx.profiles?.email||'—'}</td>
+                <td style="color:var(--red);font-weight:700">$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                <td>${parts['Network']||'—'}</td>
+                <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis">${parts['To']||'—'}</td>
+                <td style="font-size:12px;color:var(--muted)">${new Date(tx.created_at).toLocaleDateString()}</td>
+                <td><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
+                <td>${tx.status==='pending'?`<button class="btn btn-success btn-sm" onclick="markWithdrawalDone('${tx.id}')">✓ Mark Sent</button>`:'—'}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    async function markWithdrawalDone(txId) {
+        await _supabase.from('transactions').update({ status: 'completed' }).eq('id', txId);
+        showToast('✅', 'Withdrawal marked as sent', 'success');
+        loadWithdrawals();
+    }
+
+    // ── ALL TRANSACTIONS ──
+    async function loadAllTransactions() {
+        const type = document.getElementById('txTypeFilter').value;
+        const status = document.getElementById('txStatusFilter').value;
+        let query = _supabase.from('transactions').select('*, profiles(email)').order('created_at',{ascending:false}).limit(100);
+        if (type) query = query.eq('type', type);
+        if (status) query = query.eq('status', status);
+        const { data } = await query;
+
+        const icons = { deposit:'⬇️', withdrawal:'⬆️', ai_injection:'🤖', investment:'📈' };
+        const isDebit = t => t.type === 'withdrawal' || t.type === 'investment';
+        const tbody = document.getElementById('allTxBody');
+        if (!data || data.length === 0) { tbody.innerHTML='<tr><td colspan="6" class="empty-state">No transactions found</td></tr>'; return; }
+
+        tbody.innerHTML = data.map(tx => `<tr>
+            <td style="color:var(--cyan)">${tx.profiles?.email||'—'}</td>
+            <td>${icons[tx.type]||'💳'} ${tx.type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</td>
+            <td style="font-weight:700;color:${isDebit(tx)?'var(--red)':'var(--green)'}">${isDebit(tx)?'−':'+'} $${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+            <td><span class="badge-pill bp-${tx.status}">${tx.status}</span></td>
+            <td style="font-size:11px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tx.note||'—'}</td>
+            <td style="font-size:12px;color:var(--muted)">${new Date(tx.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+        </tr>`).join('');
+    }
+
+    // ── RECEIPT MODAL ──
+    function viewReceipt(tx) {
+        const note = tx.note || '';
+        const parts = {};
+        note.split(' | ').forEach(p => { const [k,...v] = p.split(': '); parts[k.trim()] = v.join(': ').trim(); });
+        const receiptUrl = tx.receipt_url || parts['Receipt'];
+
+        document.getElementById('modalMeta').innerText = `Submitted: ${new Date(tx.created_at).toLocaleString()}`;
+        document.getElementById('modalNotes').innerHTML = Object.entries(parts)
+            .filter(([k]) => k !== 'Receipt')
+            .map(([k,v]) => `<div><span style="color:var(--muted);width:110px;display:inline-block">${k}</span> <strong>${v}</strong></div>`)
+            .join('');
+
+        const img = document.getElementById('modalImg');
+        if (receiptUrl && receiptUrl !== 'N/A') {
+            img.src = receiptUrl;
+            img.style.display = 'block';
+        } else {
+            img.style.display = 'none';
         }
+        document.getElementById('receiptModal').classList.add('show');
+    }
 
-        loadKYC();
-    </script>
+    function closeModal() { document.getElementById('receiptModal').classList.remove('show'); }
+
+    // ── NAV ──
+    function showPage(name, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + name).classList.add('active');
+        if (el) el.classList.add('active');
+        if (name === 'inject') loadInjectHistory();
+    }
+
+    // ── TOAST ──
+    function showToast(icon, msg, type='success') {
+        const t = document.getElementById('toast');
+        document.getElementById('toastIcon').innerText = icon;
+        document.getElementById('toastMsg').innerText = msg;
+        t.className = `toast ${type} show`;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 5000);
+    }
+
+    init();
+</script>
 </body>
 </html>
