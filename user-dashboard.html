@@ -303,6 +303,29 @@
 
         input[type="date"], input[type="time"] { color-scheme: dark; }
 
+        /* ── INVESTMENT TRACKING CARDS ── */
+        .invest-track-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px 18px;
+            margin-bottom: 12px; display: flex;
+            align-items: center; gap: 16px; flex-wrap: wrap;
+        }
+        .invest-track-card.active-plan { border-color: rgba(6,182,212,0.25); background: rgba(6,182,212,0.04); }
+        .invest-track-card.completed-plan { border-color: rgba(34,197,94,0.2); background: rgba(34,197,94,0.03); }
+        .invest-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 11px; border-radius: 20px; font-size: 11px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .pill-active { background: rgba(6,182,212,0.15); color: var(--cyan); border: 1px solid rgba(6,182,212,0.3); }
+        .pill-completed { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+        .pill-pending { background: rgba(245,158,11,0.15); color: var(--gold); border: 1px solid rgba(245,158,11,0.3); }
+        .progress-bar-wrap { flex: 1; min-width: 120px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+        .progress-bar { height: 5px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--cyan)); transition: width 0.6s ease; }
+
         @media (max-width: 540px) {
             .receipt-grid { grid-template-columns: 1fr !important; }
         }
@@ -346,6 +369,7 @@
                 <div class="nav-item" onclick="showPage('deposit', this)"><span class="nav-icon">⬇️</span> Deposit</div>
                 <div class="nav-item" onclick="showPage('withdraw', this)"><span class="nav-icon">⬆️</span> Withdraw</div>
                 <div class="nav-item" onclick="showPage('invest', this)"><span class="nav-icon">🤖</span> AI Invest</div>
+                <div class="nav-item" onclick="showPage('investments', this)"><span class="nav-icon">⚡</span> My Investments</div>
                 <div class="nav-item" onclick="showPage('history', this)"><span class="nav-icon">📋</span> History</div>
                 <div class="nav-item" onclick="showPage('kyc', this)"><span class="nav-icon">🪪</span> KYC</div>
             </nav>
@@ -364,13 +388,13 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-label">Balance</div>
+                        <div class="stat-label">Available Balance</div>
                         <div class="stat-val" id="balance">$0.00</div>
                         <div class="stat-icon">💰</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Invested</div>
-                        <div class="stat-val" id="investment">$0.00</div>
+                        <div class="stat-label">Currently Invested</div>
+                        <div class="stat-val" id="investment" style="color:var(--gold)">$0.00</div>
                         <div class="stat-icon">📈</div>
                     </div>
                     <div class="stat-card">
@@ -391,6 +415,14 @@
                         <button class="btn-primary" style="width:auto;padding:11px 22px" onclick="showPage('deposit', document.querySelector('[onclick*=deposit]'))">Deposit Crypto</button>
                         <button class="btn-primary" style="width:auto;padding:11px 22px;background:linear-gradient(135deg,#0e7490,#0891b2)" onclick="showPage('invest', document.querySelector('[onclick*=invest]'))">Start AI Investing</button>
                         <button class="btn-primary" style="width:auto;padding:11px 22px;background:linear-gradient(135deg,#065f46,#047857)" onclick="showPage('withdraw', document.querySelector('[onclick*=withdraw]'))">Withdraw Funds</button>
+                    </div>
+                </div>
+
+                <!-- ACTIVE INVESTMENTS -->
+                <div class="card">
+                    <div class="card-title">⚡ Active Investments</div>
+                    <div id="active-investments-list">
+                        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No active investments</div>
                     </div>
                 </div>
 
@@ -663,6 +695,24 @@
                 </div>
             </div>
 
+            <!-- ACTIVE INVESTMENTS on invest page -->
+            <div class="page" id="page-investments">
+                <div class="page-title">My Investments</div>
+                <div class="page-sub">Track all your active and completed AI investment plans</div>
+                <div class="card">
+                    <div class="card-title">⚡ Active Plans</div>
+                    <div id="invest-page-active">
+                        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No active investments</div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top:0">
+                    <div class="card-title">✅ Completed Plans</div>
+                    <div id="invest-page-completed">
+                        <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No completed investments yet</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- HISTORY -->
             <div class="page" id="page-history">
                 <div class="page-title">Transaction History</div>
@@ -722,61 +772,170 @@
         let walletData = null;
         let selectedPlanData = null;
 
+        const PLAN_DURATIONS = { '1 Day': 1, '3 Days': 3, '1 Week': 7, '2 Weeks': 14, '1 Month': 30, '3 Months': 90 };
+
         // ── INIT ──
         async function init() {
             const { data: { user } } = await _supabase.auth.getUser();
             if (!user) { window.location.href = 'index.html'; return; }
             currentUser = user;
-
             await loadWallet();
             await loadTransactions();
+            await loadInvestments();
             await loadKYC();
         }
 
+        // ── WALLET ──
         async function loadWallet() {
             const { data: wallet } = await _supabase
                 .from('wallets').select('*').eq('user_id', currentUser.id).single();
             if (wallet) {
                 walletData = wallet;
-                document.getElementById('balance').innerText = `$${Number(wallet.balance).toLocaleString('en-US', {minimumFractionDigits:2})}`;
-                document.getElementById('investment').innerText = `$${Number(wallet.current_investment).toLocaleString('en-US', {minimumFractionDigits:2})}`;
-                document.getElementById('aiEarnings').innerText = `$${Number(wallet.ai_earnings).toLocaleString('en-US', {minimumFractionDigits:2})}`;
-                document.getElementById('profit').innerText = `$${Number(wallet.total_profit).toLocaleString('en-US', {minimumFractionDigits:2})}`;
-                document.getElementById('withdrawBalance').innerText = `$${Number(wallet.balance).toLocaleString('en-US', {minimumFractionDigits:2})}`;
+                const fmt = v => `$${Number(v).toLocaleString('en-US', {minimumFractionDigits:2})}`;
+                document.getElementById('balance').innerText = fmt(wallet.balance);
+                document.getElementById('investment').innerText = fmt(wallet.current_investment);
+                document.getElementById('aiEarnings').innerText = fmt(wallet.ai_earnings);
+                document.getElementById('profit').innerText = fmt(wallet.total_profit);
+                document.getElementById('withdrawBalance').innerText = fmt(wallet.balance);
             }
         }
 
+        async function updateWalletBalance(field, delta) {
+            // delta = positive to add, negative to subtract
+            const current = walletData ? Number(walletData[field]) : 0;
+            const newVal = Math.max(0, current + delta);
+            const { error } = await _supabase.from('wallets')
+                .update({ [field]: newVal, updated_at: new Date().toISOString() })
+                .eq('user_id', currentUser.id);
+            if (!error) await loadWallet();
+            return error;
+        }
+
+        // ── TRANSACTIONS ──
         async function loadTransactions() {
             const { data: txs } = await _supabase
                 .from('transactions').select('*')
                 .eq('user_id', currentUser.id)
                 .order('created_at', { ascending: false })
-                .limit(20);
+                .limit(30);
 
             const icons = { deposit: '⬇️', withdrawal: '⬆️', ai_injection: '🤖', investment: '📈' };
             const colors = { deposit: 'var(--green)', withdrawal: 'var(--red)', ai_injection: 'var(--cyan)', investment: 'var(--gold)' };
+            const isDebit = t => t.type === 'withdrawal' || t.type === 'investment';
 
             if (txs && txs.length > 0) {
                 const html = txs.map(tx => `
                     <div class="tx-row">
                         <div class="tx-left">
-                            <div class="tx-icon" style="background:${colors[tx.type] || 'var(--blue)'}22">${icons[tx.type] || '💳'}</div>
+                            <div class="tx-icon" style="background:${(colors[tx.type]||'var(--blue)')}22">${icons[tx.type]||'💳'}</div>
                             <div>
-                                <div class="tx-type">${tx.type.replace('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}</div>
-                                <div class="tx-date">${new Date(tx.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+                                <div class="tx-type">${tx.type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</div>
+                                <div class="tx-date">${new Date(tx.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+                                ${tx.note ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">${tx.note.split('|')[0]}</div>` : ''}
                             </div>
                         </div>
-                        <div style="display:flex;align-items:center;gap:12px">
-                            <div class="tx-amount" style="color:${tx.type==='withdrawal'?'var(--red)':'var(--green)'}">
-                                ${tx.type === 'withdrawal' ? '-' : '+'}$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}
+                        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+                            <div class="tx-amount" style="color:${isDebit(tx)?'var(--red)':'var(--green)'}">
+                                ${isDebit(tx)?'−':'+'}$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}
                             </div>
                             <span class="tx-badge badge-${tx.status}">${tx.status}</span>
                         </div>
                     </div>
                 `).join('');
                 document.getElementById('tx-list').innerHTML = html;
-                document.getElementById('overview-txs').innerHTML = html;
+                document.getElementById('overview-txs').innerHTML = txs.slice(0,5).map(tx => `
+                    <div class="tx-row">
+                        <div class="tx-left">
+                            <div class="tx-icon" style="background:${(colors[tx.type]||'var(--blue)')}22">${icons[tx.type]||'💳'}</div>
+                            <div>
+                                <div class="tx-type">${tx.type.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</div>
+                                <div class="tx-date">${new Date(tx.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <div class="tx-amount" style="color:${isDebit(tx)?'var(--red)':'var(--green)'}">
+                                ${isDebit(tx)?'−':'+'}$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}
+                            </div>
+                            <span class="tx-badge badge-${tx.status}">${tx.status}</span>
+                        </div>
+                    </div>
+                `).join('');
             }
+        }
+
+        // ── INVESTMENTS TRACKING ──
+        async function loadInvestments() {
+            const { data: txs } = await _supabase
+                .from('transactions').select('*')
+                .eq('user_id', currentUser.id)
+                .eq('type', 'investment')
+                .order('created_at', { ascending: false });
+
+            if (!txs || txs.length === 0) return;
+
+            const now = new Date();
+            const active = [], completed = [];
+
+            txs.forEach(tx => {
+                // parse plan duration from note e.g. "Plan: 1 Week | Return: 50%"
+                const planMatch = tx.note && tx.note.match(/Plan:\s*([^|]+)/);
+                const returnMatch = tx.note && tx.note.match(/Return:\s*(\d+)%/);
+                const planName = planMatch ? planMatch[1].trim() : 'Unknown';
+                const returnPct = returnMatch ? parseInt(returnMatch[1]) : 0;
+                const durationDays = PLAN_DURATIONS[planName] || 7;
+
+                const startDate = new Date(tx.created_at);
+                const endDate = new Date(startDate.getTime() + durationDays * 86400000);
+                const elapsed = Math.max(0, now - startDate);
+                const total = endDate - startDate;
+                const progress = Math.min(100, Math.round((elapsed / total) * 100));
+                const isComplete = now >= endDate;
+
+                const earnings = (Number(tx.amount) * returnPct) / 100;
+                const payout = Number(tx.amount) + earnings;
+
+                const card = { tx, planName, returnPct, durationDays, startDate, endDate, progress, isComplete, earnings, payout };
+                if (isComplete) completed.push(card); else active.push(card);
+            });
+
+            renderInvestmentCards('active-investments-list', active, 'active');
+            renderInvestmentCards('invest-page-active', active, 'active');
+            renderInvestmentCards('invest-page-completed', completed, 'completed');
+        }
+
+        function renderInvestmentCards(containerId, items, type) {
+            const el = document.getElementById(containerId);
+            if (!items || items.length === 0) {
+                el.innerHTML = `<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px">No ${type} investments</div>`;
+                return;
+            }
+            el.innerHTML = items.map(({ tx, planName, returnPct, startDate, endDate, progress, isComplete, earnings, payout }) => `
+                <div class="invest-track-card ${isComplete ? 'completed-plan' : 'active-plan'}">
+                    <div style="font-size:22px">${isComplete ? '✅' : '⚡'}</div>
+                    <div style="flex:1;min-width:140px">
+                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px">${planName} Plan</div>
+                        <div style="font-size:12px;color:var(--muted)">
+                            Started ${startDate.toLocaleDateString('en-US',{month:'short',day:'numeric'})} 
+                            · Ends ${endDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+                        </div>
+                        ${!isComplete ? `
+                        <div class="progress-bar-wrap" style="margin-top:10px">
+                            <div class="progress-label"><span>Progress</span><span>${progress}%</span></div>
+                            <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+                        </div>` : ''}
+                    </div>
+                    <div style="text-align:right;min-width:120px">
+                        <div style="font-size:11px;color:var(--muted);margin-bottom:3px">Invested</div>
+                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px">$${Number(tx.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+                        <div style="font-size:11px;color:var(--muted);margin-top:6px;margin-bottom:3px">Expected Payout</div>
+                        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:${isComplete?'var(--green)':'var(--gold)'}">$${payout.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+                        <div style="font-size:11px;color:var(--cyan);margin-top:2px">+${returnPct}% return</div>
+                    </div>
+                    <div>
+                        <span class="invest-pill ${isComplete ? 'pill-completed' : 'pill-active'}">${isComplete ? '✔ Done' : '🔄 Running'}</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
         async function loadKYC() {
@@ -816,25 +975,18 @@
 
             if (!amount || !txHash) { showToast('⚠️', 'Please enter at least an amount and TxID', 'error'); return; }
 
-            const formattedDate = date ? new Date(date + 'T00:00').toLocaleDateString('en-US', {weekday:'short', year:'numeric', month:'short', day:'numeric'}) : '—';
-            const formattedTime = time || '—';
-
+            const formattedDate = date ? new Date(date + 'T00:00').toLocaleDateString('en-US', {weekday:'short',year:'numeric',month:'short',day:'numeric'}) : '—';
             const rows = [
-                ['Sender', name || '—'],
-                ['Network', network],
+                ['Sender', name || '—'], ['Network', network],
                 ['USD Amount', amount ? `$${parseFloat(amount).toLocaleString('en-US',{minimumFractionDigits:2})}` : '—'],
-                ['Crypto Amount', cryptoAmt || '—'],
-                ['Date', formattedDate],
-                ['Time', formattedTime],
-                ['TxID', txHash ? txHash.slice(0,18) + '...' : '—'],
+                ['Crypto Amount', cryptoAmt || '—'], ['Date', formattedDate],
+                ['Time', time || '—'], ['TxID', txHash ? txHash.slice(0,18)+'...' : '—'],
             ];
-
-            document.getElementById('receiptSummaryGrid').innerHTML = rows.map(([k,v]) => `
-                <div style="color:var(--muted)">${k}</div>
-                <div style="font-weight:600;word-break:break-all">${v}</div>
-            `).join('');
+            document.getElementById('receiptSummaryGrid').innerHTML = rows.map(([k,v]) =>
+                `<div style="color:var(--muted)">${k}</div><div style="font-weight:600;word-break:break-all">${v}</div>`
+            ).join('');
             document.getElementById('receiptPreview').style.display = 'block';
-            document.getElementById('receiptPreview').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            document.getElementById('receiptPreview').scrollIntoView({ behavior:'smooth', block:'nearest' });
             showToast('👁️', 'Preview generated — check below', 'success');
         }
 
@@ -852,32 +1004,23 @@
             if (!txHash || !amount) { showToast('⚠️', 'TxID and amount are required', 'error'); return; }
             if (!date || !time) { showToast('⚠️', 'Please enter the date and time of transfer', 'error'); return; }
 
-            const note = [
-                `Network: ${network}`,
-                `TxID: ${txHash}`,
-                `Crypto Amount: ${cryptoAmt || 'N/A'}`,
-                `Date: ${date} ${time}`,
-                `Sender: ${name || 'N/A'}`,
-                `From Wallet: ${senderWallet || 'N/A'}`,
-                `Receipt: ${receiptUrl || 'N/A'}`
-            ].join(' | ');
+            const note = [`Network: ${network}`,`TxID: ${txHash}`,`Crypto Amount: ${cryptoAmt||'N/A'}`,
+                `Date: ${date} ${time}`,`Sender: ${name||'N/A'}`,`From Wallet: ${senderWallet||'N/A'}`,
+                `Receipt: ${receiptUrl||'N/A'}`].join(' | ');
 
             const { error } = await _supabase.from('transactions').insert({
-                user_id: currentUser.id,
-                type: 'deposit',
-                amount: amount,
-                status: 'pending',
-                note: note
+                user_id: currentUser.id, type: 'deposit', amount, status: 'pending', note
             });
-
             if (error) { showToast('❌', error.message, 'error'); return; }
-            showToast('✅', 'Receipt submitted! Account will be credited within 30–60 mins.', 'success');
+            // NOTE: balance is credited by admin after verification — no auto-debit on deposit
+            showToast('✅', 'Receipt submitted! Account credited within 30–60 mins.', 'success');
             ['senderName','txHashInput','depositAmountInput','cryptoAmount','depositDate','depositTime','senderWallet','receiptUrl']
                 .forEach(id => document.getElementById(id).value = '');
             document.getElementById('receiptPreview').style.display = 'none';
+            await loadTransactions();
         }
 
-        // ── WITHDRAWAL ──
+        // ── WITHDRAWAL — deducts from balance immediately ──
         async function submitWithdrawal() {
             const address = document.getElementById('withdrawAddress').value.trim();
             const amount = parseFloat(document.getElementById('withdrawAmount').value);
@@ -885,23 +1028,28 @@
 
             if (!address || !amount) { showToast('⚠️', 'Please fill all fields', 'error'); return; }
             if (amount < 20) { showToast('⚠️', 'Minimum withdrawal is $20', 'error'); return; }
-            if (walletData && amount > walletData.balance) { showToast('❌', 'Insufficient balance', 'error'); return; }
+            if (!walletData || amount > Number(walletData.balance)) {
+                showToast('❌', `Insufficient balance. Available: $${Number(walletData?.balance||0).toLocaleString('en-US',{minimumFractionDigits:2})}`, 'error'); return;
+            }
 
-            const { error } = await _supabase.from('transactions').insert({
-                user_id: currentUser.id,
-                type: 'withdrawal',
-                amount: amount,
-                status: 'pending',
+            // 1. Insert withdrawal transaction
+            const { error: txErr } = await _supabase.from('transactions').insert({
+                user_id: currentUser.id, type: 'withdrawal', amount, status: 'pending',
                 note: `Network: ${network} | To: ${address}`
             });
+            if (txErr) { showToast('❌', txErr.message, 'error'); return; }
 
-            if (error) { showToast('❌', error.message, 'error'); return; }
-            showToast('✅', 'Withdrawal request submitted! Processing within 24–48 hours.', 'success');
+            // 2. Deduct from balance
+            const balErr = await updateWalletBalance('balance', -amount);
+            if (balErr) { showToast('⚠️', 'Transaction recorded but balance update failed. Contact support.', 'error'); return; }
+
+            showToast('✅', `Withdrawal of $${amount.toLocaleString()} requested! Processing in 24–48 hrs.`, 'success');
             document.getElementById('withdrawAddress').value = '';
             document.getElementById('withdrawAmount').value = '';
+            await loadTransactions();
         }
 
-        // ── INVEST ──
+        // ── INVEST — deducts from balance, adds to current_investment ──
         function selectPlan(el, duration, returnPct, minAmount) {
             document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
@@ -914,49 +1062,61 @@
             const amount = parseFloat(document.getElementById('investAmount').value);
             const calc = document.getElementById('investCalc');
             if (!amount || amount <= 0) { calc.style.display = 'none'; return; }
-
             const earnings = (amount * selectedPlanData.returnPct) / 100;
             const total = amount + earnings;
-
             calc.style.display = 'block';
             document.getElementById('calcPlan').innerText = selectedPlanData.duration;
-            document.getElementById('calcInvest').innerText = `$${amount.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('calcInvest').innerText = `$${amount.toLocaleString('en-US',{minimumFractionDigits:2})}`;
             document.getElementById('calcRate').innerText = `${selectedPlanData.returnPct}%`;
-            document.getElementById('calcEarnings').innerText = `+$${earnings.toLocaleString('en-US', {minimumFractionDigits:2})}`;
-            document.getElementById('calcTotal').innerText = `$${total.toLocaleString('en-US', {minimumFractionDigits:2})}`;
+            document.getElementById('calcEarnings').innerText = `+$${earnings.toLocaleString('en-US',{minimumFractionDigits:2})}`;
+            document.getElementById('calcTotal').innerText = `$${total.toLocaleString('en-US',{minimumFractionDigits:2})}`;
         }
 
         async function submitInvestment() {
             if (!selectedPlanData) { showToast('⚠️', 'Please select a plan first', 'error'); return; }
             const amount = parseFloat(document.getElementById('investAmount').value);
             if (!amount || amount < selectedPlanData.minAmount) {
-                showToast('⚠️', `Minimum for this plan is $${selectedPlanData.minAmount}`, 'error'); return;
+                showToast('⚠️', `Minimum for this plan is $${selectedPlanData.minAmount.toLocaleString()}`, 'error'); return;
             }
-            if (walletData && amount > walletData.balance) { showToast('❌', 'Insufficient balance', 'error'); return; }
+            if (!walletData || amount > Number(walletData.balance)) {
+                showToast('❌', `Insufficient balance. Available: $${Number(walletData?.balance||0).toLocaleString('en-US',{minimumFractionDigits:2})}`, 'error'); return;
+            }
 
-            const { error } = await _supabase.from('transactions').insert({
-                user_id: currentUser.id,
-                type: 'investment',
-                amount: amount,
-                status: 'pending',
+            // 1. Insert investment transaction
+            const { error: txErr } = await _supabase.from('transactions').insert({
+                user_id: currentUser.id, type: 'investment', amount, status: 'active',
                 note: `Plan: ${selectedPlanData.duration} | Return: ${selectedPlanData.returnPct}%`
             });
+            if (txErr) { showToast('❌', txErr.message, 'error'); return; }
 
-            if (error) { showToast('❌', error.message, 'error'); return; }
-            showToast('✅', `Investment of $${amount} started on the ${selectedPlanData.duration} plan!`, 'success');
+            // 2. Deduct from balance + add to current_investment
+            const newBalance = Number(walletData.balance) - amount;
+            const newInvestment = Number(walletData.current_investment) + amount;
+            const { error: wErr } = await _supabase.from('wallets').update({
+                balance: newBalance,
+                current_investment: newInvestment,
+                updated_at: new Date().toISOString()
+            }).eq('user_id', currentUser.id);
+
+            if (wErr) { showToast('⚠️', 'Investment recorded but wallet update failed. Contact support.', 'error'); return; }
+
+            await loadWallet();
+            await loadTransactions();
+            await loadInvestments();
+
+            showToast('✅', `$${amount.toLocaleString()} invested on the ${selectedPlanData.duration} plan! Deducted from balance.`, 'success');
             document.getElementById('investAmount').value = '';
             document.getElementById('investCalc').style.display = 'none';
+            document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+            selectedPlanData = null;
         }
 
         // ── KYC ──
         async function submitKYC() {
             const url = document.getElementById('docUrl').value.trim();
             if (!url) { showToast('⚠️', 'Please provide a document URL', 'error'); return; }
-
             const { error } = await _supabase.from('profiles')
-                .update({ kyc_document_url: url, kyc_status: 'pending' })
-                .eq('id', currentUser.id);
-
+                .update({ kyc_document_url: url, kyc_status: 'pending' }).eq('id', currentUser.id);
             if (error) { showToast('❌', error.message, 'error'); return; }
             showToast('✅', 'KYC submitted! Review takes 24–48 hours.', 'success');
             loadKYC();
@@ -974,7 +1134,6 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('page-' + name).classList.add('active');
             if (navEl) navEl.classList.add('active');
-            // close sidebar on mobile
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('open');
                 document.getElementById('overlay').classList.remove('show');
@@ -994,7 +1153,7 @@
             document.getElementById('toastMsg').innerText = msg;
             t.className = `toast ${type} show`;
             clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.classList.remove('show'), 4000);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 5000);
         }
 
         init();
